@@ -16,7 +16,7 @@ PIPELINE_PATH = '../models/pipeline.pkl'
 def main():
     mail_df = pd.read_csv(PREPARED_DATA_PATH)
     mail_labels = mail_df['delivery_time']
-    cat_attributes = ['delivery_type', 'sending_weekday']
+    cat_attributes = ['sending_weekday', 'delivery_type']
     num_attributes = ['sending_latitude', 'sending_longitude', 'delivery_latitude', 'delivery_longitude', 'distance']
     num_pipeline = Pipeline([
         ('std_scaler', StandardScaler())
@@ -25,7 +25,8 @@ def main():
         ('num', num_pipeline, num_attributes),
         ('cat', OneHotEncoder(), cat_attributes)
     ])
-    mail_prepared = full_pipeline.fit_transform(mail_df[cat_attributes + num_attributes])
+    mail_features = mail_df[num_attributes + cat_attributes]
+    mail_prepared = full_pipeline.fit_transform(mail_features)
     X_train, X_test, y_train, y_test = train_test_split(mail_prepared, mail_labels, test_size=0.2, random_state=42)
     forest_reg = RandomForestRegressor()
     forest_reg.fit(X_train, y_train)

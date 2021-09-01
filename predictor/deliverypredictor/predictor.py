@@ -5,7 +5,6 @@ from sklearn.compose import ColumnTransformer
 
 
 class DeliveryPredictor:
-
     FEATURES_COUNT = 7
 
     def __init__(self, model, pipeline: ColumnTransformer):
@@ -16,11 +15,12 @@ class DeliveryPredictor:
         mail_data: [[sending_latitude,sending_longitude,delivery_latitude,
         delivery_longitude,distance,sending_weekday,delivery_type], ...]
     '''
+
     def predict(self, mail_data: np.array) -> [(int, int)]:
         try:
             if len(mail_data.shape) != 2 or mail_data.shape[1] != self.FEATURES_COUNT:
-                raise Exception('mail_data expected to be a 2-dimensional and shaped (*, ' + str(self.FEATURES_COUNT) +
-                                ')')
+                raise ValueError('mail_data expected to be a 2-dimensional and shaped (*, ' + str(self.FEATURES_COUNT) +
+                                 ')')
             mail_df = pd.DataFrame({
                 'sending_latitude': np.asarray(mail_data[:, 0], dtype=float),
                 'sending_longitude': np.asarray(mail_data[:, 1], dtype=float),
@@ -35,6 +35,5 @@ class DeliveryPredictor:
             delivery_time_boundaries = [(max(p - 1, 1), p + 1) for p in predictions]
             return delivery_time_boundaries
 
-        except Exception as e:
+        except ValueError as e:
             raise e
-
