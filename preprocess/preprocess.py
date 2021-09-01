@@ -1,16 +1,15 @@
 import numpy as np
 import pandas as pd
+from sklearn.base import TransformerMixin
 from sklearn.preprocessing import OneHotEncoder
 from ast import literal_eval as make_tuple
 import datetime
 from sklearn.utils import shuffle
 from sklearn.feature_selection import SelectorMixin
 
-
 RAW_DATA_PATH = '../data/data.csv'
 ADDRESSES_DATA_PATH = '../data/addresses.csv'
 PREPARED_DATA_PATH = '../data/mail_prep.csv'
-FEATURES_COUNT = 19
 
 
 class SelectMailFeaturesTransformer(SelectorMixin):
@@ -43,10 +42,12 @@ class SelectMailFeaturesTransformer(SelectorMixin):
 
         sending_weekdays = [datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S').weekday()
                             for x in X[:, self.SENDING_DATE_IX]]
+        sending_hour_category = [datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S').hour >= 15
+                                 for x in X[:, self.SENDING_DATE_IX]]
 
         distances = [float(x[:-2]) if x != "0" else 0.0 for x in X[:, self.DISTANCE_IX]]
         return np.c_[sending_latitudes, sending_longitudes, delivery_latitudes, delivery_longitudes, distances,
-                     sending_weekdays, X[:, 4]]
+                     sending_weekdays, X[:, self.DELIVERY_TYPE_IX], sending_hour_category]
 
 
 def add_categories(df: pd.DataFrame) -> np.ndarray:
@@ -81,6 +82,7 @@ def main(save_path=PREPARED_DATA_PATH, address_path=ADDRESSES_DATA_PATH, raw_pat
         'distance': np.asarray(selected_features[:, 4], dtype=float),
         'sending_weekday': np.asarray(selected_features[:, 5], dtype=int),
         'delivery_type': selected_features[:, 6],
+        'sending_hour_category': np.asarray(selected_features[:, 7], dtype=int),
         'delivery_time': mail_labels
     })
     mail_df.to_csv(save_path)

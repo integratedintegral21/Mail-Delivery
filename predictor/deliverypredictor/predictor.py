@@ -5,7 +5,7 @@ from sklearn.compose import ColumnTransformer
 
 
 class DeliveryPredictor:
-    FEATURES_COUNT = 7
+    FEATURES_COUNT = 8
 
     def __init__(self, model, pipeline: ColumnTransformer):
         self.model = model
@@ -31,6 +31,7 @@ class DeliveryPredictor:
                 'delivery_type': mail_data[:, 6],
             })
             mail_prepared = self.pipeline.transform(mail_df)
+            mail_prepared = np.append(mail_prepared, np.c_[mail_data[:, 7]], axis=1)
             predictions = [max(round(p), 1) for p in self.model.predict(mail_prepared)]
             delivery_time_boundaries = [(max(p - 1, 1), p + 1) for p in predictions]
             return delivery_time_boundaries
