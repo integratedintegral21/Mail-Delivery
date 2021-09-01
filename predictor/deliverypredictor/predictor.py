@@ -13,7 +13,7 @@ class DeliveryPredictor:
 
     '''
         mail_data: [[sending_latitude,sending_longitude,delivery_latitude,
-        delivery_longitude,distance,sending_weekday,delivery_type], ...]
+        delivery_longitude,distance,sending_weekday,delivery_type,sending_hour_category], ...]
     '''
 
     def predict(self, mail_data: np.array) -> [(int, int)]:
