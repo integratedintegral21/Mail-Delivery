@@ -4,8 +4,6 @@ import sklearn.base
 from sklearn.base import TransformerMixin
 from ast import literal_eval as make_tuple
 import datetime
-from sklearn.utils import shuffle
-from sklearn.feature_selection import SelectorMixin
 
 RAW_DATA_PATH = '../data/data.csv'
 ADDRESSES_DATA_PATH = '../data/addresses.csv'
@@ -65,7 +63,6 @@ class FeaturesAdder(TransformerMixin):
 def main(save_path=PREPARED_DATA_PATH, address_path=ADDRESSES_DATA_PATH, raw_path=RAW_DATA_PATH):
     raw_df = pd.read_csv(raw_path, sep=';')
     raw_df = CoordinatesMergeTransformer(address_path).transform(raw_df)
-    raw_df = shuffle(raw_df)
 
     raw_df = FeaturesAdder().transform(raw_df)
     mail_df = raw_df[['sending_latitude', 'sending_longitude', 'delivery_latitude', 'delivery_longitude', 'distance',
