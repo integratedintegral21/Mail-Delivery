@@ -1,5 +1,7 @@
-from preprocess.saveCoordinates import get_coordinates
 import datetime
+from geopy.geocoders import Nominatim
+
+LOC_USER_AGENT = "Google Maps"
 
 
 class Preprocessor:
@@ -14,7 +16,17 @@ class Preprocessor:
 
     @staticmethod
     def get_address_coordinates(address: str) -> (float, float):
-        return get_coordinates(address)
+        try:
+            geolocator = Nominatim(user_agent=LOC_USER_AGENT)
+            location = geolocator.geocode(address)
+            print(address + ' ' + str(location.latitude) + ' ' + str(location.longitude))
+        except Exception as e:
+            print(e.__str__())
+            return None
+
+        if location is None:
+            return None
+        return location.latitude, location.longitude
 
     @staticmethod
     def get_hour_category(dt: datetime.datetime) -> int:

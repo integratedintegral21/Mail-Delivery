@@ -1,25 +1,15 @@
 import numpy as np
 import pandas as pd
 from geopy.geocoders import Nominatim
+from predictor.preproessdata import preprocessor
 
 
-LOC_USER_AGENT = "Google Maps"
 RAW_DATA_PATH = '../data/data.csv'
 ADDRESS_DATA_PATH = '../data/addresses.csv'
 
 
 def get_coordinates(address: str) -> (np.float, np.float):
-    try:
-        geolocator = Nominatim(user_agent=LOC_USER_AGENT)
-        location = geolocator.geocode(address)
-        print(address + ' ' + str(location.latitude) + ' ' + str(location.longitude))
-    except Exception as e:
-        print(e.__str__())
-        return None
-
-    if location is None:
-        return None
-    return location.latitude, location.longitude
+    return preprocessor.Preprocessor.get_address_coordinates(address)
 
 
 def get_and_save_coordinates(addresses: pd.Series, filename: str) -> None:
