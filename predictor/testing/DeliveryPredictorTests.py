@@ -2,17 +2,17 @@ import unittest
 
 import pandas as pd
 from joblib import load
-from ..deliverypredictor.predictor import DeliveryPredictor
+from predictor.deliverypredictor.predictor import DeliveryPredictor
 
 
 class DeliveryPredictorTest(unittest.TestCase):
 
-    MODEL_PATH = 'models/random_forest.pkl'
-    TRANSFORMER_PATH = 'models/pipeline.pkl'
-    PREPARED_DATA_PATH = 'data/mail_prep.csv'
+    MODEL_PATH = '../../models/random_forest.pkl'
+    TRANSFORMER_PATH = '../../models/pipeline.pkl'
+    PREPARED_DATA_PATH = '../../data/mail_prep.csv'
 
-    RAW_DATA_PATH = 'data/data.csv'
-    ADDRESS_DATA_PATH = 'data/addresses.csv'
+    RAW_DATA_PATH = '../../data/data.csv'
+    ADDRESS_DATA_PATH = '../../data/addresses.csv'
 
     def setUp(self) -> None:
         self.model = load(self.MODEL_PATH)
