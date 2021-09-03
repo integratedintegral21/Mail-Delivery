@@ -5,10 +5,10 @@ LOC_USER_AGENT = "Google Maps"
 
 
 class Preprocessor:
-    ALLOWED_DELIVERY_TYPES = ['List polecony priorytetowy', 'List polecony ekonomiczny',
-                              'Economy registered letter',
+    ALLOWED_DELIVERY_TYPES = ['Economy registered letter',
+                              'Priority registered letter',
                               'Przesyłka firmowa polecona zamiejscowa',
-                              'business letter, registered', 'Priority registered letter',
+                              'business letter, registered',
                               'Przesyłka firmowa polecona miejscowa',
                               'Przesyłka firmowa polecona zamiejscowa priorytetowa']
 

@@ -9,9 +9,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from sklearn.utils import shuffle
-from tensorflow.keras.layers import Dense, InputLayer
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.callbacks import EarlyStopping
 
 PREPARED_DATA_PATH = '../data/mail_prep.csv'
 FOREST_MODEL_PATH = '../models/random_forest.pkl'

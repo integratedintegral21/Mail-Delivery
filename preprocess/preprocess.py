@@ -26,6 +26,15 @@ class CoordinatesMergeTransformer(TransformerMixin):
         return df
 
 
+class DeliveryTypeCleaner(TransformerMixin):
+    def transform(self, df: pd.DataFrame):
+        return df.replace({
+            'List polecony ekonomiczny': 'Economy registered letter',
+            'List polecony priorytetowy': 'Priority registered letter',
+            'business letter, registered': 'Business registered letter'
+        })
+
+
 class FeaturesAdder(TransformerMixin):
     SENDING_COORD_IX = 10
     DELIVERY_COORD_IX = 11
@@ -63,6 +72,7 @@ class FeaturesAdder(TransformerMixin):
 def main(save_path=PREPARED_DATA_PATH, address_path=ADDRESSES_DATA_PATH, raw_path=RAW_DATA_PATH):
     raw_df = pd.read_csv(raw_path, sep=';')
     raw_df = CoordinatesMergeTransformer(address_path).transform(raw_df)
+    raw_df = DeliveryTypeCleaner().transform(raw_df)
 
     raw_df = FeaturesAdder().transform(raw_df)
     mail_df = raw_df[['sending_latitude', 'sending_longitude', 'delivery_latitude', 'delivery_longitude', 'distance',
