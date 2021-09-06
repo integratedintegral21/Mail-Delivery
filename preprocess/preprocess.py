@@ -108,7 +108,8 @@ def main(save_path=PREPARED_DATA_PATH, address_path=ADDRESSES_DATA_PATH, raw_pat
     raw_df = DeliveryTypeCleaner().transform(raw_df)
 
     raw_df = FeaturesAdder().transform(raw_df)
-    mail_df = raw_df[['distance', 'sending_weekday', 'delivery_type', 'sending_hour_category', 'vehicle_travel_time',
+    mail_df = raw_df[['sending_latitude', 'sending_longitude', 'delivery_latitude', 'delivery_longitude',
+                      'distance', 'sending_weekday', 'delivery_type', 'sending_hour_category', 'vehicle_travel_time',
                       'delivery_time_hours']]
     mail_df.to_csv(save_path)
     print(mail_df.corr().to_string())
