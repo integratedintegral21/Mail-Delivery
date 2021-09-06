@@ -31,10 +31,12 @@ def scheduler(epochs, lr):
 def main():
     mail_df = pd.read_csv(PREPARED_DATA_PATH)
     mail_df = shuffle(mail_df)
+
     mail_labels = mail_df['delivery_time_hours']
     cat_attributes = ['sending_weekday', 'post_office_type']
     num_attributes = ['distance', 'vehicle_travel_time', 'sending_hour']
     ordinal_attributes = ['delivery_type', 'sending_hour_category']
+
     num_pipeline = Pipeline([
         ('std_scaler', StandardScaler())
     ])
@@ -53,7 +55,6 @@ def main():
     print('validation mse:\n' + str(mean_squared_error(y_test, forest_reg.predict(X_test))))
     dump(forest_reg, FOREST_MODEL_PATH)
     '''
-    dump(full_pipeline, PIPELINE_PATH)
     model = Sequential([
         Dense(50, activation='relu', kernel_initializer='he_normal', input_shape=(16,)),
         Dropout(0.05),
@@ -69,6 +70,7 @@ def main():
         EarlyStopping(patience=10, restore_best_weights=True),
         LearningRateScheduler(scheduler),
     ])
+    dump(full_pipeline, PIPELINE_PATH)
     model.save(NN_PATH)
 
 
