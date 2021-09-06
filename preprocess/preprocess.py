@@ -16,8 +16,8 @@ class CoordinatesMergeTransformer(TransformerMixin):
         self.addresses_df['Coordinates'] = self.addresses_df['Coordinates'].apply(make_tuple)
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = pd.merge(df, self.addresses_df, left_on='sending_location', right_on='Address')
-        df = pd.merge(df, self.addresses_df, left_on='delivery_location', right_on='Address')
+        df = pd.merge(df, self.addresses_df, how='left', left_on='sending_location', right_on='Address')
+        df = pd.merge(df, self.addresses_df, how='left', left_on='delivery_location', right_on='Address')
         df.drop(columns=['Address_x', 'Address_y', 'Unnamed: 0_x', 'Unnamed: 0_y'], axis=1, inplace=True)
         df.rename(columns={'Coordinates_x': 'sending_coordinates', 'Coordinates_y': 'delivery_coordinates'},
                   inplace=True)
@@ -112,7 +112,6 @@ def main(save_path=PREPARED_DATA_PATH, address_path=ADDRESSES_DATA_PATH, raw_pat
                       'distance', 'sending_weekday', 'delivery_type', 'sending_hour_category', 'vehicle_travel_time',
                       'delivery_time_hours']]
     mail_df.to_csv(save_path)
-    print(mail_df.corr().to_string())
 
 
 if __name__ == "__main__":
