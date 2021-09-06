@@ -79,7 +79,7 @@ class FeaturesAdder(TransformerMixin):
 
     @staticmethod
     def get_hour_category(date_str) -> int:
-        return datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S').hour >= 15
+        return int(datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S').hour >= 15)
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
         distances = [float(x[:-2]) if x != "0" else 0.0 for x in df.values[:, self.DISTANCE_IX]]
