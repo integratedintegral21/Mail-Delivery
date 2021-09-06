@@ -73,38 +73,38 @@ class FeaturesAdder(TransformerMixin):
     SENDING_DATE_IX = 0
     DISTANCE_IX = 9
 
+    @staticmethod
+    def parse_weekday(date_str: str) -> int:
+        return datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S').weekday()
+
+    @staticmethod
+    def get_hour_category(date_str) -> int:
+        return datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S').hour >= 15
+
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
-
-        sending_weekdays = [datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S').weekday()
-                            for x in df.values[:, self.SENDING_DATE_IX]]
-        sending_hour_categories = [datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S').hour >= 15
-                                 for x in df.values[:, self.SENDING_DATE_IX]]
-
         distances = [float(x[:-2]) if x != "0" else 0.0 for x in df.values[:, self.DISTANCE_IX]]
-        df['sending_weekday'] = np.asarray(sending_weekdays, dtype=int)
-        df['sending_hour_category'] = np.asarray(sending_hour_categories, dtype=int)
+        df['sending_weekday'] = df['sending_date'].apply(self.parse_weekday)
+        df['sending_hour_category'] = df['sending_date'].apply(self.get_hour_category)
         df['distance'] = np.asarray(distances, dtype=float)
         df['sending_date'] = df['sending_date'].apply(lambda str_date: datetime.datetime.strptime(str_date, '%Y-%m-%d '
                                                                                                             '%H:%M:%S'))
         df['delivery_date'] = df['delivery_date'].apply(lambda str_date: datetime.datetime.strptime(str_date, '%Y-%m'
                                                                                                               '-%d '
                                                                                                               '%H:%M:%S'))
-
         durations = (df['delivery_date'] - df['sending_date'])
         df['delivery_time_hours'] = [d.total_seconds() / 3600 for d in durations]
-
         df = VehicleTransportStrFormat().transform(df)
         # parse from string
         df['vehicle_travel_time'] = df['vehicle_travel_time'].apply(lambda str_date: datetime.datetime.strptime(str_date, '%H hr %M min'))
         # convert to timedelta
-        df['vehicle_travel_time'] = df['vehicle_travel_time'].apply(lambda dt: datetime.timedelta(hours=dt.hour, minutes=dt.minute).total_seconds() / 3600)
+        df['vehicle_travel_time'] = df['vehicle_travel_time'].apply(lambda dt: datetime.timedelta(hours=dt.hour, minutes=dt.minute).total_seconds() / 3660)
 
         return df
 
 
 def main(save_path=PREPARED_DATA_PATH, address_path=ADDRESSES_DATA_PATH, raw_path=RAW_DATA_PATH):
     raw_df = pd.read_csv(raw_path, sep=';')
-    # raw_df = CoordinatesMergeTransformer(address_path).transform(raw_df)
+    raw_df = CoordinatesMergeTransformer(address_path).transform(raw_df)
     raw_df = DeliveryTypeCleaner().transform(raw_df)
 
     raw_df = FeaturesAdder().transform(raw_df)
