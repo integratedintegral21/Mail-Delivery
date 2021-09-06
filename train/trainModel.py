@@ -34,7 +34,7 @@ def main():
     mail_labels = mail_df['delivery_time_hours']
     cat_attributes = ['sending_weekday', 'post_office_type']
     num_attributes = ['distance', 'vehicle_travel_time', 'sending_hour']
-    ordinal_attributes = ['delivery_type']
+    ordinal_attributes = ['delivery_type', 'sending_hour_category']
     num_pipeline = Pipeline([
         ('std_scaler', StandardScaler())
     ])
@@ -45,8 +45,6 @@ def main():
     ])
     mail_features = mail_df[num_attributes + cat_attributes + ordinal_attributes]
     mail_prepared = full_pipeline.fit_transform(mail_features)
-    sending_hours_categories = mail_df['sending_hour_category'].to_numpy()
-    mail_prepared = np.append(mail_prepared, np.c_[sending_hours_categories], axis=1)
     X_train, X_test, y_train, y_test = train_test_split(mail_prepared, mail_labels, test_size=0.2, random_state=42)
     '''
     forest_reg = RandomForestRegressor()
