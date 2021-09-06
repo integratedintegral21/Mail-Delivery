@@ -2,6 +2,7 @@ import pandas as pd
 from predictor.deliverypredictor import predictor
 from joblib import load
 from sklearn.utils import shuffle
+from tensorflow.keras.models import load_model
 
 '''
     TODO:
@@ -13,7 +14,7 @@ from sklearn.utils import shuffle
 
 
 def main():
-    model = load('../models/random_forest.pkl')
+    model = load_model('../models/nn.h5')
     pipeline = load('../models/pipeline.pkl')
     delivery_predictor = predictor.DeliveryPredictor(model, pipeline)
     mail_prep_df = pd.read_csv('../data/mail_prep.csv')
