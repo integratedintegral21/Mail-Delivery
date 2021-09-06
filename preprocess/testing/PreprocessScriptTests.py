@@ -14,22 +14,23 @@ class PreprocessScriptTestCase(unittest.TestCase):
     TEST_ADDRESSES_DATA_PATH = 'test_cases/test_addresses.csv'
     TEST_PREP_PATH = 'tmp/test_mail_prep.csv'
 
-    EXPECTED_COLUMNS = ['sending_latitude', 'sending_longitude', 'delivery_latitude', 'delivery_longitude', 'distance',
-                        'sending_weekday', 'delivery_type', 'sending_hour_category', 'delivery_time_hours']
-    EXPECTED_TYPES = {'sending_latitude': np.float,
-                      'sending_longitude': np.float,
-                      'delivery_latitude': np.float,
-                      'delivery_longitude': np.float,
-                      'distance': np.int,
+    EXPECTED_COLUMNS = ['distance', 'sending_weekday', 'delivery_type', 'post_office_type',
+                        'sending_hour_category', 'vehicle_travel_time', 'sending_hour', 'delivery_time_hours'
+                        ]
+
+    EXPECTED_TYPES = {
+                      'distance': np.float,
                       'sending_weekday': np.int,
                       'delivery_type': np.object,
                       'sending_hour_category': np.int,
-                      'delivery_time_hours': np.int
+                      'delivery_time_hours': np.int,
+                      'post_office_type': np.object,
+                      'vehicle_travel_time': np.float
                       }
 
     EXPECTED_DELIVERY_TIMES = [
-        48 + 9 / 60,
-        42 + 54 / 60,
+        24 + 9 / 60,
+        42 + 53 / 60,
         20 + 3 / 60,
         19 + 9 / 60,
         18 + 55 / 60,
@@ -63,7 +64,9 @@ class PreprocessScriptTestCase(unittest.TestCase):
 
     def test_delivery_time(self):
         actual_delivery_times = self.test_mail_prep['delivery_time_hours']
-        self.assertListEqual(self.test_mail_prep['delivery_time_hours'], self.EXPECTED_DELIVERY_TIMES)
+        for i in range(len(actual_delivery_times)):
+            with self.subTest():
+                self.assertAlmostEqual(actual_delivery_times[i], self.EXPECTED_DELIVERY_TIMES[i], 1)
 
 
 if __name__ == '__main__':

@@ -85,10 +85,11 @@ class FeaturesAdder(TransformerMixin):
         return int(datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S').hour >= 15)
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
-        distances = [float(x[:-2]) if x != "0" else 0.0 for x in df.values[:, self.DISTANCE_IX]]
+        # distances = [float(x[:-2]) if x != "0" else 0.0 for x in df.values[:, self.DISTANCE_IX]]
         df['sending_weekday'] = df['sending_date'].apply(self.parse_weekday)
         df['sending_hour_category'] = df['sending_date'].apply(self.get_hour_category)
-        df['distance'] = np.asarray(distances, dtype=float)
+        # df['distance'] = np.asarray(distances, dtype=float)
+        df['distance'] = df['distance'].apply(lambda x: float(x[:-2]) if x != "0" else 0.0)
         df['sending_date'] = df['sending_date'].apply(lambda str_date: datetime.datetime.strptime(str_date, '%Y-%m-%d '
                                                                                                             '%H:%M:%S'))
         df['delivery_date'] = df['delivery_date'].apply(lambda str_date: datetime.datetime.strptime(str_date, '%Y-%m'
