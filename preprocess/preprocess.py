@@ -23,6 +23,22 @@ class CoordinatesMergeTransformer(TransformerMixin):
                   inplace=True)
 
         df.dropna(inplace=True)
+
+        def get_latitude(coords):
+            return coords[0]
+
+        def get_longitude(coords):
+            return coords[1]
+
+        sending_latitudes = df['sending_coordinates'].apply(get_latitude)
+        sending_longitudes = df['sending_coordinates'].apply(get_longitude)
+        delivery_latitudes = df['delivery_coordinates'].apply(get_latitude)
+        delivery_longitudes = df['delivery_coordinates'].apply(get_longitude)
+
+        df['sending_latitude'] = np.asarray(sending_latitudes, dtype=float)
+        df['sending_longitude'] = np.asarray(sending_longitudes, dtype=float)
+        df['delivery_latitude'] = np.asarray(delivery_latitudes, dtype=float)
+        df['delivery_longitude'] = np.asarray(delivery_longitudes, dtype=float)
         return df
 
 
@@ -58,29 +74,16 @@ class FeaturesAdder(TransformerMixin):
     DISTANCE_IX = 9
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
-        def get_latitude(coords):
-            return coords[0]
 
-        def get_longitude(coords):
-            return coords[1]
-
-        sending_latitudes = [get_latitude(x) for x in df.values[:, self.SENDING_COORD_IX]]
-        sending_longitudes = [get_longitude(x) for x in df.values[:, self.SENDING_COORD_IX]]
-        delivery_latitudes = [get_latitude(x) for x in df.values[:, self.DELIVERY_COORD_IX]]
-        delivery_longitudes = [get_longitude(x) for x in df.values[:, self.DELIVERY_COORD_IX]]
         sending_weekdays = [datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S').weekday()
                             for x in df.values[:, self.SENDING_DATE_IX]]
         sending_hour_categories = [datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S').hour >= 15
                                  for x in df.values[:, self.SENDING_DATE_IX]]
 
         distances = [float(x[:-2]) if x != "0" else 0.0 for x in df.values[:, self.DISTANCE_IX]]
-        df['sending_latitude'] = np.asarray(sending_latitudes, dtype=float)
-        df['sending_longitude'] = np.asarray(sending_longitudes, dtype=float)
-        df['delivery_latitude'] = np.asarray(delivery_latitudes, dtype=float)
-        df['delivery_longitude'] = np.asarray(delivery_longitudes, dtype=float)
         df['sending_weekday'] = np.asarray(sending_weekdays, dtype=int)
         df['sending_hour_category'] = np.asarray(sending_hour_categories, dtype=int)
-        df['distance'] = np.asarray(distances, dtype=int)
+        df['distance'] = np.asarray(distances, dtype=float)
         df['sending_date'] = df['sending_date'].apply(lambda str_date: datetime.datetime.strptime(str_date, '%Y-%m-%d '
                                                                                                             '%H:%M:%S'))
         df['delivery_date'] = df['delivery_date'].apply(lambda str_date: datetime.datetime.strptime(str_date, '%Y-%m'
@@ -101,13 +104,14 @@ class FeaturesAdder(TransformerMixin):
 
 def main(save_path=PREPARED_DATA_PATH, address_path=ADDRESSES_DATA_PATH, raw_path=RAW_DATA_PATH):
     raw_df = pd.read_csv(raw_path, sep=';')
-    raw_df = CoordinatesMergeTransformer(address_path).transform(raw_df)
+    # raw_df = CoordinatesMergeTransformer(address_path).transform(raw_df)
     raw_df = DeliveryTypeCleaner().transform(raw_df)
 
     raw_df = FeaturesAdder().transform(raw_df)
-    mail_df = raw_df[['sending_latitude', 'sending_longitude', 'delivery_latitude', 'delivery_longitude', 'distance',
-                      'sending_weekday', 'delivery_type', 'sending_hour_category', 'vehicle_travel_time', 'delivery_time_hours']]
+    mail_df = raw_df[['distance', 'sending_weekday', 'delivery_type', 'sending_hour_category', 'vehicle_travel_time',
+                      'delivery_time_hours']]
     mail_df.to_csv(save_path)
+    print(mail_df.corr().to_string())
 
 
 if __name__ == "__main__":
