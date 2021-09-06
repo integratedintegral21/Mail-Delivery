@@ -31,8 +31,7 @@ def main():
     mail_df = shuffle(mail_df)
     mail_labels = mail_df['delivery_time_hours']
     cat_attributes = ['sending_weekday', 'delivery_type']
-    num_attributes = ['sending_latitude', 'sending_longitude', 'delivery_latitude', 'delivery_longitude', 'distance',
-                      'vehicle_travel_time']
+    num_attributes = ['distance', 'vehicle_travel_time']
     num_pipeline = Pipeline([
         ('std_scaler', StandardScaler())
     ])
@@ -41,7 +40,7 @@ def main():
         ('cat', OneHotEncoder(), cat_attributes)
     ])
     mail_features = mail_df[num_attributes + cat_attributes]
-    mail_prepared = full_pipeline.fit_transform(mail_features)
+    mail_prepared = full_pipeline.fit_transform(mail_features).toarray()
     sending_hours_categories = mail_df['sending_hour_category'].to_numpy()
     mail_prepared = np.append(mail_prepared, np.c_[sending_hours_categories], axis=1)
     X_train, X_test, y_train, y_test = train_test_split(mail_prepared, mail_labels, test_size=0.2, random_state=42)
@@ -54,16 +53,17 @@ def main():
     dump(full_pipeline, PIPELINE_PATH)
     '''
     model = Sequential([
-        InputLayer(input_shape=(19,)),
+        InputLayer(input_shape=(15,)),
         Dense(50, activation='relu'),
         Dense(50, activation='relu'),
         Dense(50, activation='relu'),
-        Dense(20, activation='relu'),
+        Dense(50, activation='relu'),
+        Dense(50, activation='relu'),
         Dense(1)
     ])
 
     model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
-    model.fit(X_train, y_train, batch_size=64, validation_data=(X_test, y_test), epochs=1000, callbacks=[
+    model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=1000, callbacks=[
         EarlyStopping(patience=10),
         LearningRateScheduler(scheduler)
     ])
