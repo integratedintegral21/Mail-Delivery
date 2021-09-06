@@ -44,11 +44,14 @@ class CoordinatesMergeTransformer(TransformerMixin):
 
 class DeliveryTypeCleaner(TransformerMixin):
     def transform(self, df: pd.DataFrame):
-        return df.replace({
+        df = df.replace({
             'List polecony ekonomiczny': 'Economy registered letter',
             'List polecony priorytetowy': 'Priority registered letter',
-            'business letter, registered': 'Business registered letter'
         })
+        df = df[df['delivery_type'] == 'Priority registered letter'].append(
+            df[df['delivery_type'] == 'Economy registered letter']
+        )
+        return df
 
 
 class VehicleTransportStrFormat(TransformerMixin):
@@ -98,19 +101,20 @@ class FeaturesAdder(TransformerMixin):
         df['vehicle_travel_time'] = df['vehicle_travel_time'].apply(lambda str_date: datetime.datetime.strptime(str_date, '%H hr %M min'))
         # convert to timedelta
         df['vehicle_travel_time'] = df['vehicle_travel_time'].apply(lambda dt: datetime.timedelta(hours=dt.hour, minutes=dt.minute).total_seconds() / 3660)
+        df['post_office_type'] = df['sending_location'].apply(lambda loc: loc.split(' ')[0])
+        df['sending_hour'] = df['sending_date'].apply(lambda date: date.hour)
 
         return df
 
 
 def main(save_path=PREPARED_DATA_PATH, address_path=ADDRESSES_DATA_PATH, raw_path=RAW_DATA_PATH):
     raw_df = pd.read_csv(raw_path, sep=';')
-    raw_df = CoordinatesMergeTransformer(address_path).transform(raw_df)
+    # raw_df = CoordinatesMergeTransformer(address_path).transform(raw_df)
     raw_df = DeliveryTypeCleaner().transform(raw_df)
 
     raw_df = FeaturesAdder().transform(raw_df)
-    mail_df = raw_df[['sending_latitude', 'sending_longitude', 'delivery_latitude', 'delivery_longitude',
-                      'distance', 'sending_weekday', 'delivery_type', 'sending_hour_category', 'vehicle_travel_time',
-                      'delivery_time_hours']]
+    mail_df = raw_df[['distance', 'sending_weekday', 'delivery_type', 'post_office_type', 'sending_hour_category',
+                      'vehicle_travel_time', 'sending_hour', 'delivery_time_hours']]
     mail_df.to_csv(save_path)
 
 

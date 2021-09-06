@@ -6,10 +6,9 @@ from sklearn.utils import shuffle
 '''
     TODO:
     
-    w preprocess/preprocess.py w klasie FeaturesAdder (metoda transform) dodaj czas dostarczenia w godzinach (label; 
-    roznica pomiędzy czasem dostarczenia a czasem wysłania. Zapisz tabelkę w data/mail_prep.csv
-    
-    w nowym skrypcie w train/ dodaj trenowanie sieci neuronowej i zapisz w models/
+    predictor/deliverypredictor/predictor.py modify predict method
+    model saved in models/nn.h5
+    pipeline saved in models/pipeline.pkl
 '''
 
 
