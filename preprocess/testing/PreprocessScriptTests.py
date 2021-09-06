@@ -11,7 +11,7 @@ class PreprocessScriptTestCase(unittest.TestCase):
     MAIL_PREP_DST = 'tmp/mail_prep.csv'
 
     EXPECTED_COLUMNS = ['sending_latitude', 'sending_longitude', 'delivery_latitude', 'delivery_longitude', 'distance',
-                        'sending_weekday', 'delivery_type', 'sending_hour_category', 'delivery_time']
+                        'sending_weekday', 'delivery_type', 'sending_hour_category', 'delivery_time_hours']
     EXPECTED_TYPES = {'sending_latitude': np.float,
                       'sending_longitude': np.float,
                       'delivery_latitude': np.float,
@@ -20,7 +20,8 @@ class PreprocessScriptTestCase(unittest.TestCase):
                       'sending_weekday': np.int,
                       'delivery_type': np.object,
                       'sending_hour_category': np.int,
-                      'delivery_time': np.int}
+                      'delivery_time_hours': np.int
+                      }
 
     def setUp(self) -> None:
         preprocess.main(self.MAIL_PREP_DST, self.ADDRESSES_DATA_PATH, self.RAW_DATA_PATH)
@@ -31,7 +32,8 @@ class PreprocessScriptTestCase(unittest.TestCase):
 
     def test_features_presence(self):
         for ft in self.EXPECTED_COLUMNS:
-            self.assertIn(ft, self.mail_prep.columns)
+            with self.subTest(msg=ft):
+                self.assertIn(ft, self.mail_prep.columns)
 
     def test_features_types(self):
         for (col_name, col_type) in self.EXPECTED_TYPES.items():
