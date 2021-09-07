@@ -48,9 +48,8 @@ class DeliveryTypeCleaner(TransformerMixin):
             'List polecony ekonomiczny': 'Economy registered letter',
             'List polecony priorytetowy': 'Priority registered letter',
         })
-        df = df[df['delivery_type'] == 'Priority registered letter'].append(
-            df[df['delivery_type'] == 'Economy registered letter']
-        )
+        df = df[(df['delivery_type'] == 'Economy registered letter') |
+                (df['delivery_type'] == 'Priority registered letter')]
         return df
 
 
