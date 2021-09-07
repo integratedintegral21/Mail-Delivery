@@ -66,12 +66,15 @@ def main():
     ])
 
     model.compile(optimizer='adam', loss='mae', metrics=['accuracy'])
-    model.fit(X_train, y_train, batch_size=32, validation_data=(X_test, y_test), epochs=1000, callbacks=[
+    history = model.fit(X_train, y_train, batch_size=32, validation_data=(X_test, y_test), epochs=1000, callbacks=[
         EarlyStopping(patience=10, restore_best_weights=True),
         LearningRateScheduler(scheduler),
     ])
     dump(full_pipeline, PIPELINE_PATH)
     model.save(NN_PATH)
+
+    history_df = pd.DataFrame(history.history)
+    history_df.loc[:, ['loss', 'val_loss']].plot()
 
 
 if __name__ == "__main__":
