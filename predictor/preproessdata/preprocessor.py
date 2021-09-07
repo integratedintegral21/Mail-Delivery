@@ -32,4 +32,4 @@ class Preprocessor:
 
     @staticmethod
     def get_vehicle_transport_time(location1: str, location2: str) -> datetime.time:
-        pass
+        raise NotImplementedError
