@@ -1,5 +1,4 @@
 import datetime
-from abc import ABC
 from abc import abstractmethod
 from predictor.preproessdata import preprocessor
 
@@ -10,10 +9,10 @@ class Singleton(type):
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances
+        return cls._instances[cls]
 
 
-class DeliveryType(ABC, metaclass=Singleton):
+class DeliveryType(metaclass=Singleton):
     @abstractmethod
     def __str__(self):
         pass
@@ -29,7 +28,7 @@ class PriorityRegisteredLetter(DeliveryType, metaclass=Singleton):
         return "Priority Registered Letter"
 
 
-class PostOfficeType(ABC, metaclass=Singleton):
+class PostOfficeType(metaclass=Singleton):
     @abstractmethod
     def __str__(self):
         pass
@@ -56,9 +55,9 @@ class PP(PostOfficeType, metaclass=Singleton):
 
 
 class Mail:
-    def __init__(self, delivery_type: DeliveryType, mail_id, sending_date: datetime.datetime, sending_location: str,
+    def __init__(self, delivery_type: type(DeliveryType), mail_id, sending_date: datetime.datetime, sending_location: str,
                  destination_location: str, post_office_type, distance: float,
-                 vehicle_transport_time: float, sending_hour_category: int):
+                 vehicle_transport_time: float):
         self._delivery_type = delivery_type
         self._mail_id = mail_id
         self._sending_date = sending_date
@@ -71,6 +70,8 @@ class Mail:
         self._vehicle_transport_time = vehicle_transport_time
 
     def deliver_mail(self, delivery_date: datetime.datetime) -> None:
+        if self.is_delivered():
+            raise Exception('Mail already delivered')
         if delivery_date < self._sending_date:
             raise ValueError('Delivery date must be later than sending date')
         self._delivery_date = delivery_date
@@ -83,8 +84,8 @@ class Mail:
         return [
             self._distance,
             self._sending_date.weekday(),
-            self._delivery_date.__str__(),
-            self._post_office_type.__str__(),
+            str(self._delivery_type),
+            str(self._post_office_type),
             preprocessor.Preprocessor.get_hour_category(self._sending_date),
             self._vehicle_transport_time,
             self._sending_date.hour
