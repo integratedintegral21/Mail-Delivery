@@ -69,6 +69,33 @@ class Mail:
         self._distance = distance
         self._vehicle_transport_time = vehicle_transport_time
 
+    def get_delivery_type(self) -> type(DeliveryType):
+        return self._delivery_type
+
+    def get_mail_id(self):
+        return self._mail_id
+
+    def get_sending_date(self):
+        return self._sending_date
+
+    def get_delivery_date(self):
+        return self._delivery_date
+
+    def get_sending_location(self):
+        return self._sending_location
+
+    def get_destination_location(self):
+        return self._destination_location
+
+    def get_post_office_type(self):
+        return self._post_office_type
+
+    def get_distance(self):
+        return self._distance
+
+    def get_vehicle_transport_time(self):
+        return self._vehicle_transport_time
+
     def deliver_mail(self, delivery_date: datetime.datetime) -> None:
         if self.is_delivered():
             raise Exception('Mail already delivered')
