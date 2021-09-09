@@ -10,7 +10,7 @@ class MailTestCase(unittest.TestCase):
         self._delivery_type_0 = mail.EconomicRegisteredLetter()
         self._delivery_type_1 = mail.PriorityRegisteredLetter()
 
-        self._mail_id = 0
+        self._mail_id = "0"
 
         self._sending_date_0 = datetime.datetime(2021, 6, 29, 13, 49, 0)
         self._sending_date_1 = datetime.datetime(2021, 6, 29, 15, 0, 0)

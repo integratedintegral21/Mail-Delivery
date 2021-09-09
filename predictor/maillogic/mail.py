@@ -55,8 +55,8 @@ class PP(PostOfficeType, metaclass=Singleton):
 
 
 class Mail:
-    def __init__(self, delivery_type: type(DeliveryType), mail_id, sending_date: datetime.datetime, sending_location: str,
-                 destination_location: str, post_office_type, distance: float,
+    def __init__(self, delivery_type: type(DeliveryType), mail_id: str, sending_date: datetime.datetime,
+                 sending_location: str, destination_location: str, post_office_type, distance: float,
                  vehicle_transport_time: float):
         self._delivery_type = delivery_type
         self._mail_id = mail_id

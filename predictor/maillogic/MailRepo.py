@@ -12,11 +12,14 @@ class MailRepository:
             raise Exception('This mail has already been added')
         self._mail_list.append(new_mail)
 
-    def get(self, mail_id) -> Union(mail.Mail, None):
+    def get(self, mail_id):
         for m in self._mail_list:
             if mail_id == m.get_mail_id():
                 return m
         return None
+
+    def get_all(self) -> np.array:
+        return np.array(self._mail_list)
 
     def remove(self, mail_id):
         m = self.get(mail_id)
@@ -26,7 +29,7 @@ class MailRepository:
     def find_by(self, predicate) -> np.array:
         m_list = []
         for m in self._mail_list:
-            if predicate(mail):
+            if predicate(m):
                 m_list.append(m)
         return np.array(m_list)
 
