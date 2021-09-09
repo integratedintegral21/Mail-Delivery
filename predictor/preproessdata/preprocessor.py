@@ -31,5 +31,13 @@ class Preprocessor:
         return dt.hour >= 15
 
     @staticmethod
-    def get_vehicle_transport_time(location1: str, location2: str) -> datetime.time:
+    def get_delivery_time_hours(sending_dt: datetime.datetime, delivery_dt: datetime.datetime):
+        return (delivery_dt - sending_dt).total_seconds() / 3600
+
+    @staticmethod
+    def get_vehicle_transport_time_hours(location1: str, location2: str) -> int:
+        raise NotImplementedError
+
+    @staticmethod
+    def get_distance(location1: str, location2: str) -> int:
         raise NotImplementedError
