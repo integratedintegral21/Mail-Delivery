@@ -3,7 +3,7 @@ import unittest
 import datetime
 
 from predictor.maillogic import mail
-from predictor.maillogic.MailRepo import MailRepository
+from predictor.maillogic.mailRepo import MailRepository
 from predictor.maillogic.mail import Mail
 
 
