@@ -190,7 +190,7 @@ driver.get("https://emonitoring.poczta-polska.pl/")
 listOfLetters = []
 
 # ------------------------------------------------------- czytyanie dotychczasowego zbioru
-f = open('zbior_baz_placowek.txt', 'r')
+f = open('bazy_placowek_21_06.txt', 'r')
 text = f.read()
 f.close()
 print(text)
