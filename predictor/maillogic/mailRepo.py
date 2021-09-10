@@ -34,5 +34,9 @@ class MailRepository:
         return np.array(m_list)
 
     def get_features_array(self) -> np.array:
-        f_list = [m.get_features() for m in self._mail_list]
+        f_list = [m.get_features_list() for m in self._mail_list]
         return np.array(f_list)
+
+    def get_labels_array(self) -> np.array:
+        l_list = [m.get_label() for m in self._mail_list]
+        return np.array(l_list)

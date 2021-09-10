@@ -7,7 +7,7 @@ from predictor.maillogic.mailRepo import MailRepository
 from predictor.maillogic.mail import Mail
 
 
-class MyTestCase(unittest.TestCase):
+class RepoTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self._repository = MailRepository()
         self._sending_date = datetime.datetime(2021, 6, 30, 13, 49, 0)
@@ -31,6 +31,7 @@ class MyTestCase(unittest.TestCase):
         ]
 
     def test_add_remove(self):
+        self.assertIsNone(self._repository.get("0"))
         for m in self._mails:
             self._repository.add(m)
         for ID in range(4):
