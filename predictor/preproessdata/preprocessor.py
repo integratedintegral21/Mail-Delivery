@@ -39,5 +39,5 @@ class Preprocessor:
         raise NotImplementedError
 
     @staticmethod
-    def get_distance(location1: str, location2: str) -> int:
+    def get_distance(location1: str, location2: str) -> float:
         raise NotImplementedError
