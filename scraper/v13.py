@@ -228,7 +228,6 @@ def main():
                     EC.presence_of_element_located((By.ID, "infoTable"))
                 )
                 letter_1 = Letter(None, "nie doszedl", None, "nie doszedl", None, number)
-
                 tab = info.find_elements_by_tag_name("tr")  # tablica z inf o przesylce
                 for row_number in range(1, len(tab)):
                     row = tab[row_number].find_elements_by_tag_name("td")
@@ -255,7 +254,7 @@ def main():
                     print('Taki blad: ' + str(e))
                     letter_1.on_time = check_if_on_time_2(letter_1)
                     list_of_letters.append(letter_1)
-                    
+
                     f_2 = open("data2.txt", "a", encoding='utf-8')
                     line = letter_1.to_file()
                     f_2.write(line)
@@ -280,8 +279,8 @@ def main():
     all_fir = 0
 
     for letter in list_of_letters:
-        if letter.on_time != 2:  # jesli nie ma 2, to znaczy ze doszedl i trzeba go uwzglednic
-            good_l += letter.on_time  # jesli doszedl na czas, to on_time jest rowny 1, w przeciwnym razie 0 i wszystko ok
+        if letter.on_time != 2:  # is delivered
+            good_l += letter.on_time  # increment good_l if delivered on_time
             all_l += 1
 
             if letter.typ == 'List polecony ekonomiczny':
