@@ -196,11 +196,7 @@ f = open('office_bases.txt', 'r')
 text = f.read()
 f.close()
 print(text)
-table = text.split(',')
-print(table)
-list_of_bases = []
-for t in table:
-    list_of_bases.append(t)
+list_of_bases = text.split(',')
 # ------------------------------------------------
 
 
