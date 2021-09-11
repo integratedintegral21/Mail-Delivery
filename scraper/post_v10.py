@@ -14,6 +14,8 @@ import sys, os
 
 start_time = time.time()
 
+# nr przesyłki: nr_placówki:0001-1000:cyfra_kontrolna
+
 
 def split_data(date_text):  # dostawanie ze stringa daty
     day_and_hour = date_text.split(" ")
@@ -190,7 +192,7 @@ driver.get("https://emonitoring.poczta-polska.pl/")
 listOfLetters = []
 
 # ------------------------------------------------------- czytyanie dotychczasowego zbioru
-f = open('bazy_placowek_21_06.txt', 'r')
+f = open('office_bases.txt', 'r')
 text = f.read()
 f.close()
 print(text)
