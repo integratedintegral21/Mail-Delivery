@@ -12,7 +12,8 @@ import datetime
 import time
 import sys, os
 
-start_time = time.time()
+PATH = "/home/wojciech/chromedriver/chromedriver"
+SCRAPPING_TIME = 600
 
 # nr przesyłki: nr_placówki:0001-1000:cyfra_kontrolna
 
@@ -184,129 +185,130 @@ class Letter:
         return line
 
 
-PATH = "/home/wojciech/chromedriver/chromedriver"
-driver = webdriver.Chrome(PATH)
-
-driver.get("https://emonitoring.poczta-polska.pl/")
-
-listOfLetters = []
-
-# ------------------------------------------------------- czytyanie dotychczasowego zbioru
-f = open('office_bases.txt', 'r')
-text = f.read()
-f.close()
-print(text)
-list_of_bases = text.split(',')
-# ------------------------------------------------
+def get_bases(f_name: str) -> list:
+    f = open(f_name, 'r')
+    text = f.read()
+    f.close()
+    list_of_bases = text.split(',')
+    print('Found ' + str(len(list_of_bases)) + " bases:")
+    [print(b_id) for b_id in list_of_bases]
+    return list_of_bases
 
 
-for s in list_of_bases:
-    base = s  # dla kazdej bazy ze zbioru
-    i = 0
-    if (
-            time.time() - start_time > 600):  # ograniczenie czasowe na 2h, wyrzuci teraz z tej petli while i wroci
-        # do glownej po secie, gdzie znowu warunek na 2h
-        print("Skonczono po 2h, najblizsza nieprzeobiona baza to:", base)
-        break
-    while 1:
+def main():
+    driver = webdriver.Chrome(PATH)
+    start_time = time.time()
 
-        number = create_existing_number(base, i)
-        field = driver.find_element_by_id("searchInputPostalDelivery")
-        field.clear()
-        field.send_keys(number)
-        field.send_keys(Keys.RETURN)
+    driver.get("https://emonitoring.poczta-polska.pl/")
 
-        i += 1
-        if i > 999:  # warunek, zeby wszystkie numery byly prawidlowe
+    list_of_letters = []
+    list_of_bases = get_bases('office_bases.txt')
+
+    for base_id in list_of_bases:
+        mail_id = 0
+        if time.time() - start_time > SCRAPPING_TIME:
+            print("Skonczono po " + str(SCRAPPING_TIME) + "s, najblizsza nieprzeobiona baza to:", base_id)
             break
+        while 1:
+            number = create_existing_number(base_id, mail_id)
+            field = driver.find_element_by_id("searchInputPostalDelivery")
+            field.clear()
+            field.send_keys(number)
+            field.send_keys(Keys.RETURN)
 
-        try:
-            time.sleep(0.1)
-            info = WebDriverWait(driver, 4).until(
-                # try-except, przy odnajdowaniu tablicy z info o liscie, bo nie ma 100% pewnosci, ze to dobry numerek
-                EC.presence_of_element_located((By.ID, "infoTable"))
-            )
-            count = 0  # gdy trafiamy na zajety numerek, trzeba zrestartowac licznik
-            letter_1 = Letter(None, "nie doszedl", None, "nie doszedl", None, number)
+            mail_id += 1
+            if mail_id > 999:  # warunek, zeby wszystkie numery byly prawidlowe
+                break
 
-            # zdobywanie inf o przesylce -------------------------------------------------------------------------------------------------------------------------
-            tab = info.find_elements_by_tag_name("tr")  # tablica z inf o przesylce
-            for row_number in range(1,
-                                    len(tab)):  # dla kazdego wiersza tabeli sprawdzamy czy zawiera potrzebna informacje(poza zerowym, bo on jest jakis dziwny)
-                row = tab[row_number].find_elements_by_tag_name("td")
-                letter_1 = get_inf_1(row, letter_1)
-            # zdobywanie inf o przesylce -------------------------------------------------------------------------------------------------------------------------
+            try:
+                time.sleep(0.1)
+                info = WebDriverWait(driver, 4).until(
+                    # try-except, przy odnajdowaniu tablicy z info o liscie, bo nie ma 100% pewnosci, ze to dobry numerek
+                    EC.presence_of_element_located((By.ID, "infoTable"))
+                )
+                letter_1 = Letter(None, "nie doszedl", None, "nie doszedl", None, number)
 
-            # zdobywanie inf o statusie przesyki -----------------------------------------------------------------------------------------------------------------
-            try:  # nie wiadomo czy juz doszlo, stad try-except
-                table_tracking = driver.find_element_by_id("eventsTable")
-                tab = table_tracking.find_elements_by_tag_name("tr")
-
+                # zdobywanie inf o przesylce -------------------------------------------------------------------------------------------------------------------------
+                tab = info.find_elements_by_tag_name("tr")  # tablica z inf o przesylce
                 for row_number in range(1,
-                                        len(tab)):  # dla kazdego wiersza tabeli sprawdzamy czy zawiera potrzebna
-                    # informacje(poza zerowym, bo on jest jakis dziwny)
+                                        len(tab)):  # dla kazdego wiersza tabeli sprawdzamy czy zawiera potrzebna informacje(poza zerowym, bo on jest jakis dziwny)
                     row = tab[row_number].find_elements_by_tag_name("td")
-                    letter_1 = get_inf_2(row, letter_1)
-                letter_1.ilosc_dni_roboczych = count_working_days(letter_1.data_wyslania, letter_1.data_dotarcia)
-                letter_1.on_time = check_if_on_time(letter_1)
-                listOfLetters.append(letter_1)
+                    letter_1 = get_inf_1(row, letter_1)
+                # zdobywanie inf o przesylce -------------------------------------------------------------------------------------------------------------------------
 
-            except Exception as e:
+                # zdobywanie inf o statusie przesyki -----------------------------------------------------------------------------------------------------------------
+                try:  # nie wiadomo czy juz doszlo, stad try-except
+                    table_tracking = driver.find_element_by_id("eventsTable")
+                    tab = table_tracking.find_elements_by_tag_name("tr")
+
+                    for row_number in range(1, len(tab)):  # dla kazdego wiersza tabeli sprawdzamy czy zawiera potrzebna
+                        # informacje(poza zerowym, bo on jest jakis dziwny)
+                        row = tab[row_number].find_elements_by_tag_name("td")
+                        letter_1 = get_inf_2(row, letter_1)
+                    letter_1.ilosc_dni_roboczych = count_working_days(letter_1.data_wyslania, letter_1.data_dotarcia)
+                    letter_1.on_time = check_if_on_time(letter_1)
+                    list_of_letters.append(letter_1)
+
+                except Exception as e:
+                    print('Taki blad: ' + str(e))
+                    letter_1.on_time = check_if_on_time_2(letter_1)
+                    list_of_letters.append(letter_1)
+                    continue
+                # zdobywanie inf o statusie przesyki -----------------------------------------------------------------------------------------------------------------
+
+            except Exception as e:  # znaczy, ze pusty numer, poczta nic tu nie przypisala, idziemy do kolejnego
                 print('Taki blad: ' + str(e))
-                letter_1.on_time = check_if_on_time_2(letter_1)
-                listOfLetters.append(letter_1)
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_type, fname, exc_tb.tb_lineno)
                 continue
-            # zdobywanie inf o statusie przesyki -----------------------------------------------------------------------------------------------------------------
 
-        except Exception as e:  # znaczy, ze pusty numer, poczta nic tu nie przypisala, idziemy do kolejnego
-            print('Taki blad: ' + str(e))
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print(exc_type, fname, exc_tb.tb_lineno)
-            continue
+    good_l = 0
+    all_l = 0
+    good_l_ek = 0
+    all_l_ek = 0
+    good_l_pr = 0
+    all_l_pr = 0
+    good_fir = 0
+    all_fir = 0
 
-good_l = 0
-all_l = 0
-good_l_ek = 0
-all_l_ek = 0
-good_l_pr = 0
-all_l_pr = 0
-good_fir = 0
-all_fir = 0
+    for letter in list_of_letters:
+        if letter.on_time != 2:  # jesli nie ma 2, to znaczy ze doszedl i trzeba go uwzglednic
+            good_l += letter.on_time  # jesli doszedl na czas, to on_time jest rowny 1, w przeciwnym razie 0 i wszystko ok
+            all_l += 1
 
-for x in listOfLetters:
-    if x.on_time != 2:  # jesli nie ma 2, to znaczy ze doszedl i trzeba go uwzglednic
-        good_l += x.on_time  # jesli doszedl na czas, to on_time jest rowny 1, w przeciwnym razie 0 i wszystko ok
-        all_l += 1
+            if letter.typ == 'List polecony ekonomiczny':
+                good_l_ek += letter.on_time
+                all_l_ek += 1
+            if letter.typ == 'List polecony priorytetowy':
+                good_l_pr += letter.on_time
+                all_l_pr += 1
+            if letter.typ == 'Przesyłka firmowa polecona zamiejscowa':
+                good_fir += letter.on_time
+                all_fir += 1
 
-        if x.typ == 'List polecony ekonomiczny':
-            good_l_ek += x.on_time
-            all_l_ek += 1
-        if x.typ == 'List polecony priorytetowy':
-            good_l_pr += x.on_time
-            all_l_pr += 1
-        if x.typ == 'Przesyłka firmowa polecona zamiejscowa':
-            good_fir += x.on_time
-            all_fir += 1
+    if all_l != 0 and all_l_ek != 0 and all_l_pr != 0:
+        print("Na", all_l, "listow ktore powinnny juz byly dojsc,", good_l, "trafilo do adresata")
+        print("Skutecznosc poczty:", 100 * good_l / all_l, "%")
 
-if all_l != 0 and all_l_ek != 0 and all_l_pr != 0:
-    print("Na", all_l, "listow ktore powinnny juz byly dojsc,", good_l, "trafilo do adresata")
-    print("Skutecznosc poczty:", 100 * good_l / all_l, "%")
+        print("Na", all_l_ek, "listow ekonomicznych ktore powinnny juz byly dojsc,", good_l_ek, "trafilo do adresata")
+        print("Skutecznosc poczty:", 100 * good_l_ek / all_l_ek, "%")
 
-    print("Na", all_l_ek, "listow ekonomicznych ktore powinnny juz byly dojsc,", good_l_ek, "trafilo do adresata")
-    print("Skutecznosc poczty:", 100 * good_l_ek / all_l_ek, "%")
+        print("Na", all_l_pr, "listow priorytetowych ktore powinnny juz byly dojsc,", good_l_pr, "trafilo do adresata")
+        print("Skutecznosc poczty:", 100 * good_l_pr / all_l_pr, "%")
 
-    print("Na", all_l_pr, "listow priorytetowych ktore powinnny juz byly dojsc,", good_l_pr, "trafilo do adresata")
-    print("Skutecznosc poczty:", 100 * good_l_pr / all_l_pr, "%")
+    print("--- %s seconds ---" % (time.time() - start_time))
 
-print("--- %s seconds ---" % (time.time() - start_time))
+    f_2 = open("data2.txt", "a", encoding='utf-8')
+    for l in list_of_letters:
+        line = l.to_file()
+        f_2.write(line)
+        f_2.write('\n')
+    f_2.close()
 
-f_2 = open("data2.txt", "a", encoding='utf-8')
-for l in listOfLetters:
-    line = l.to_file()
-    f_2.write(line)
-    f_2.write('\n')
-f_2.close()
+    df = pd.DataFrame.from_records([l.to_dict() for l in list_of_letters])
+    show(df)
 
-df = pd.DataFrame.from_records([l.to_dict() for l in listOfLetters])
-show(df)
+
+if __name__ == "__main__":
+    main()
