@@ -13,7 +13,7 @@ import time
 import sys, os
 
 PATH = "/home/wojciech/chromedriver/chromedriver"
-SCRAPPING_TIME = 600
+SCRAPPING_TIME = 7200
 
 # nr przesyłki: nr_placówki:0001-1000:cyfra_kontrolna
 
