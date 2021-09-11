@@ -12,8 +12,9 @@ import datetime
 import time
 import sys, os
 
-PATH = "C:\Program Files (x86)\chromedriver.exe"
-SCRAPPING_TIME = 60
+PATH = "/home/wojciech/chromedriver/chromedriver"
+SCRAPPING_TIME = 7200
+
 
 # nr przesyłki: nr_placówki:0001-1000:cyfra_kontrolna
 
@@ -202,7 +203,7 @@ def main():
     driver.get("https://emonitoring.poczta-polska.pl/")
 
     list_of_letters = []
-    list_of_bases = get_bases('zbior_baz_placowek.txt')
+    list_of_bases = get_bases('office_bases.txt')
 
     for base_id in list_of_bases:
         mail_id = 0
@@ -217,32 +218,27 @@ def main():
             field.send_keys(Keys.RETURN)
 
             mail_id += 1
-            if mail_id > 999:  # warunek, zeby wszystkie numery byly prawidlowe
+            if mail_id > 999:  # mail_id is in range <1,999>
                 break
 
+            # check if the mail exist
             try:
                 time.sleep(0.1)
-                info = WebDriverWait(driver, 4).until(
-                    # try-except, przy odnajdowaniu tablicy z info o liscie, bo nie ma 100% pewnosci, ze to dobry numerek
+                info = WebDriverWait(driver, 0.5).until(
                     EC.presence_of_element_located((By.ID, "infoTable"))
                 )
                 letter_1 = Letter(None, "nie doszedl", None, "nie doszedl", None, number)
 
-                # zdobywanie inf o przesylce -------------------------------------------------------------------------------------------------------------------------
                 tab = info.find_elements_by_tag_name("tr")  # tablica z inf o przesylce
-                for row_number in range(1,
-                                        len(tab)):  # dla kazdego wiersza tabeli sprawdzamy czy zawiera potrzebna informacje(poza zerowym, bo on jest jakis dziwny)
+                for row_number in range(1, len(tab)):
                     row = tab[row_number].find_elements_by_tag_name("td")
                     letter_1 = get_inf_1(row, letter_1)
-                # zdobywanie inf o przesylce -------------------------------------------------------------------------------------------------------------------------
-
-                # zdobywanie inf o statusie przesyki -----------------------------------------------------------------------------------------------------------------
-                try:  # nie wiadomo czy juz doszlo, stad try-except
+                # check if delivered
+                try:
                     table_tracking = driver.find_element_by_id("eventsTable")
                     tab = table_tracking.find_elements_by_tag_name("tr")
 
-                    for row_number in range(1, len(tab)):  # dla kazdego wiersza tabeli sprawdzamy czy zawiera potrzebna
-                        # informacje(poza zerowym, bo on jest jakis dziwny)
+                    for row_number in range(1, len(tab)):  # iterate over rows and save info to letter_1
                         row = tab[row_number].find_elements_by_tag_name("td")
                         letter_1 = get_inf_2(row, letter_1)
                     letter_1.ilosc_dni_roboczych = count_working_days(letter_1.data_wyslania, letter_1.data_dotarcia)
@@ -267,14 +263,12 @@ def main():
                     f_2.close()
 
                     continue
-                # zdobywanie inf o statusie przesyki -----------------------------------------------------------------------------------------------------------------
 
-            except Exception as e:  # znaczy, ze pusty numer, poczta nic tu nie przypisala, idziemy do kolejnego
+            except Exception as e:  # no such mail
                 print('Taki blad: ' + str(e))
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 print(exc_type, fname, exc_tb.tb_lineno)
-                continue
 
     good_l = 0
     all_l = 0
