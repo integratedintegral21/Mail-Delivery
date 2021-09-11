@@ -192,7 +192,7 @@ def get_bases(f_name: str) -> list:
     list_of_bases = text.split(',')
     print('Found ' + str(len(list_of_bases)) + " bases:")
     [print(b_id) for b_id in list_of_bases]
-    return list_of_bases
+    return list_of_bases[:358//2]
 
 
 def main():
