@@ -11,7 +11,7 @@ def main():
         'sec-ch-ua': '"Google Chrome";v = "93", " Not;A Brand";v = "99", "Chromium";v = "93"',
         'Accept': '*/*',
         'Content-Type': 'application/json; charset = UTF-8',
-        'API_KEY': 'BiGwVG2XHvXY+kPwJVPA8gnKchOFsyy39Thkyb1wAiWcKLQ1ICyLiCrxj1+vVGC+kQk3k0b74qkmt5/qVIzo7lTfXhfgJ72Iyzz05wH2XZI6AgXVDciX7G2jLCdoOEM6XegPsMJChiouWS2RZuf3eOXpK5RPl8Sy4pWj+b07MLg=.Mjg0Q0NFNzM0RTBERTIwOTNFOUYxNkYxMUY1NDZGMTA0NDMwQUIyRjg4REUxMjk5NDAyMkQ0N0VCNDgwNTc1NA==.b24415d1b30a456cb8ba187b34cb6a86',
+        'API_KEY': '',
         'sec-ch-ua - mobile': '?0',
         'User-Agent': 'Mozilla / 5.0(X11;Fedora;Linux x86_64) AppleWebKit / 537.36(KHTML, like Gecko) Chrome / 93.0.4577.63 Safari / 537.36',
         'sec-ch-ua-platform': "Linux",
