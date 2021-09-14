@@ -9673,4 +9673,3 @@
 2021-07-23 14:42:00;2021-07-27 08:56:00;UP Kętrzyn 1 (ul. Pocztowa 1, 11-400 Kętrzyn);UP Kętrzyn 1;List polecony ekonomiczny;002590077312141599362021-07-23 14:42:00;1;2
 2021-07-23 14:42:00;2021-07-27 10:27:00;UP Kętrzyn 1 (ul. Pocztowa 1, 11-400 Kętrzyn);UP Kętrzyn 1;List polecony ekonomiczny;002590077312141599432021-07-23 14:42:00;1;2
 2021-07-23 14:42:00;2021-07-26 09:53:00;UP Kętrzyn 1 (ul. Pocztowa 1, 11-400 Kętrzyn);UP Reszel;List polecony ekonomiczny;002590077312141599502021-07-23 14:42:00;1;1
-2

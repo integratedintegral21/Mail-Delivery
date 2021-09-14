@@ -206,6 +206,54 @@ def read_table(tab, letter, get_func):
     return letter
 
 
+def scrap_base(base_id, driver, list_of_letters):
+    mail_id = 0
+    while mail_id <= 999:
+        number = create_existing_number(base_id, mail_id)
+        field = driver.find_element_by_id("searchInputPostalDelivery")
+        field.clear()
+        field.send_keys(number)
+        field.send_keys(Keys.RETURN)
+        mail_id += 1
+        # check if the mail exist
+        try:
+            time.sleep(0.1)
+            info = WebDriverWait(driver, 0.5).until(
+                EC.presence_of_element_located((By.ID, "infoTable"))
+            )
+            letter_1 = Letter(None, "nie doszedl", None, "nie doszedl", None, number)
+            tab = info.find_elements_by_tag_name("tr")  # tablica z inf o przesylce
+            letter_1 = read_table(tab, letter_1, get_sending_info)
+            # check if delivered
+            try:
+                table_tracking = driver.find_element_by_id("eventsTable")
+                tab = table_tracking.find_elements_by_tag_name("tr")
+                letter_1 = read_table(tab, letter_1, get_delivery_info)
+                letter_1.ilosc_dni_roboczych = count_working_days(letter_1.data_wyslania, letter_1.data_dotarcia)
+
+            except Exception as e:
+                print('Error: ' + str(e))
+
+            finally:
+                letter_1.on_time = check_if_on_time(letter_1)
+                list_of_letters.append(letter_1)
+
+                f_2 = open("data2.txt", "a", encoding='utf-8')
+                line = letter_1.to_file()
+                f_2.write(line)
+                f_2.write('\n')
+                f_2.close()
+                print(letter_1.to_file())
+
+        except Exception as e:  # no such mail
+            print('Error:' + str(e))
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
+
+    return list_of_letters
+
+
 def main():
     driver = webdriver.Chrome(PATH)
     start_time = time.time()
@@ -216,55 +264,10 @@ def main():
     list_of_bases = get_bases('office_bases.txt')
 
     for base_id in list_of_bases:
-        mail_id = 0
         if time.time() - start_time > SCRAPPING_TIME:
             print("Skonczono po " + str(SCRAPPING_TIME) + "s, najblizsza nieprzeobiona baza to:", base_id)
             break
-        while mail_id <= 999:
-            number = create_existing_number(base_id, mail_id)
-            field = driver.find_element_by_id("searchInputPostalDelivery")
-            field.clear()
-            field.send_keys(number)
-            field.send_keys(Keys.RETURN)
-
-            mail_id += 1
-
-            # check if the mail exist
-            try:
-                time.sleep(0.1)
-                info = WebDriverWait(driver, 0.5).until(
-                    EC.presence_of_element_located((By.ID, "infoTable"))
-                )
-                letter_1 = Letter(None, "nie doszedl", None, "nie doszedl", None, number)
-                tab = info.find_elements_by_tag_name("tr")  # tablica z inf o przesylce
-                letter_1 = read_table(tab, letter_1, get_sending_info)
-                # check if delivered
-                try:
-                    table_tracking = driver.find_element_by_id("eventsTable")
-                    tab = table_tracking.find_elements_by_tag_name("tr")
-
-                    letter_1 = read_table(tab, letter_1, get_delivery_info)
-                    letter_1.ilosc_dni_roboczych = count_working_days(letter_1.data_wyslania, letter_1.data_dotarcia)
-
-                except Exception as e:
-                    print('Error: ' + str(e))
-
-                finally:
-                    letter_1.on_time = check_if_on_time(letter_1)
-                    list_of_letters.append(letter_1)
-
-                    f_2 = open("data2.txt", "a", encoding='utf-8')
-                    line = letter_1.to_file()
-                    f_2.write(line)
-                    f_2.write('\n')
-                    f_2.close()
-                    print(letter_1.to_file())
-
-            except Exception as e:  # no such mail
-                print('Error:' + str(e))
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
+        scrap_base(base_id, driver, list_of_letters)
 
     good_l = 0
     all_l = 0
