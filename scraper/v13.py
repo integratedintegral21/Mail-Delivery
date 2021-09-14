@@ -196,13 +196,14 @@ def get_bases(f_name: str) -> list:
     list_of_bases = text.split(',')
     print('Found ' + str(len(list_of_bases)) + " bases:")
     [print(b_id) for b_id in list_of_bases]
-    return list_of_bases[list_of_bases.index('0025900773183008'):(358 // 2)]
+    return list_of_bases[list_of_bases.index('0025900773154771'):(358 // 2)]
 
 
 def read_table(tab, letter, get_func):
     for row_number in range(1, len(tab)):
         row = tab[row_number].find_elements_by_tag_name("td")
         letter = get_func(row, letter)
+    return letter
 
 
 def main():
@@ -236,17 +237,13 @@ def main():
                 )
                 letter_1 = Letter(None, "nie doszedl", None, "nie doszedl", None, number)
                 tab = info.find_elements_by_tag_name("tr")  # tablica z inf o przesylce
-                for row_number in range(1, len(tab)):
-                    row = tab[row_number].find_elements_by_tag_name("td")
-                    letter_1 = get_sending_info(row, letter_1)
+                letter_1 = read_table(tab, letter_1, get_sending_info)
                 # check if delivered
                 try:
                     table_tracking = driver.find_element_by_id("eventsTable")
                     tab = table_tracking.find_elements_by_tag_name("tr")
 
-                    for row_number in range(1, len(tab)):  # iterate over rows and save info to letter_1
-                        row = tab[row_number].find_elements_by_tag_name("td")
-                        letter_1 = get_delivery_info(row, letter_1)
+                    letter_1 = read_table(tab, letter_1, get_delivery_info)
                     letter_1.ilosc_dni_roboczych = count_working_days(letter_1.data_wyslania, letter_1.data_dotarcia)
 
                 except Exception as e:
