@@ -123,7 +123,7 @@ def create_existing_number(base, number):
     return kod
 
 
-def get_inf_1(row, letter_1):
+def get_sending_info(row, letter_1):
     if row[0].text == "Rodzaj przesyłki" or row[0].text == "Rodzaj przesyłki: ":
         letter_1.typ = row[1].text
     if row[0].text == "Urząd nadania" or row[0].text == "Urząd nadania: ":
@@ -132,12 +132,15 @@ def get_inf_1(row, letter_1):
     return letter_1
 
 
-def get_inf_2(row, letter_1):
+def get_delivery_info(row, letter_1):
     if row[0].text == "Nadanie":
         letter_1.data_wyslania = split_data(row[1].text)
-    if (row[0].text == "Doręczono" or row[0].text == "Awizo - przesyłka do odbioru w placówce" or row[
-        0].text == "Odebrano w placówce" or row[0].text == "Próba doręczenia" or row[
-        0].text == "Decyzja o zwrocie przesyłki" or row[0].text == "Próba doręczenia - dosłanie"):
+    if (row[0].text == "Doręczono" or
+            row[0].text == "Awizo - przesyłka do odbioru w placówce" or
+            row[0].text == "Odebrano w placówce" or
+            row[0].text == "Próba doręczenia" or
+            row[0].text == "Decyzja o zwrocie przesyłki" or
+            row[0].text == "Próba doręczenia - dosłanie"):
         if letter_1.miejsce_celu == "nie doszedl":
             letter_1.data_dotarcia = split_data(row[1].text)
             letter_1.miejsce_celu = row[2].text
@@ -193,7 +196,13 @@ def get_bases(f_name: str) -> list:
     list_of_bases = text.split(',')
     print('Found ' + str(len(list_of_bases)) + " bases:")
     [print(b_id) for b_id in list_of_bases]
-    return list_of_bases[6:(358 // 2)]
+    return list_of_bases[list_of_bases.index('0025900773183008'):(358 // 2)]
+
+
+def read_table(tab, letter, get_func):
+    for row_number in range(1, len(tab)):
+        row = tab[row_number].find_elements_by_tag_name("td")
+        letter = get_func(row, letter)
 
 
 def main():
@@ -210,7 +219,7 @@ def main():
         if time.time() - start_time > SCRAPPING_TIME:
             print("Skonczono po " + str(SCRAPPING_TIME) + "s, najblizsza nieprzeobiona baza to:", base_id)
             break
-        while 1:
+        while mail_id <= 999:
             number = create_existing_number(base_id, mail_id)
             field = driver.find_element_by_id("searchInputPostalDelivery")
             field.clear()
@@ -218,8 +227,6 @@ def main():
             field.send_keys(Keys.RETURN)
 
             mail_id += 1
-            if mail_id > 999:  # mail_id is in range <1,999>
-                break
 
             # check if the mail exist
             try:
@@ -231,7 +238,7 @@ def main():
                 tab = info.find_elements_by_tag_name("tr")  # tablica z inf o przesylce
                 for row_number in range(1, len(tab)):
                     row = tab[row_number].find_elements_by_tag_name("td")
-                    letter_1 = get_inf_1(row, letter_1)
+                    letter_1 = get_sending_info(row, letter_1)
                 # check if delivered
                 try:
                     table_tracking = driver.find_element_by_id("eventsTable")
@@ -239,8 +246,13 @@ def main():
 
                     for row_number in range(1, len(tab)):  # iterate over rows and save info to letter_1
                         row = tab[row_number].find_elements_by_tag_name("td")
-                        letter_1 = get_inf_2(row, letter_1)
+                        letter_1 = get_delivery_info(row, letter_1)
                     letter_1.ilosc_dni_roboczych = count_working_days(letter_1.data_wyslania, letter_1.data_dotarcia)
+
+                except Exception as e:
+                    print('Error: ' + str(e))
+
+                finally:
                     letter_1.on_time = check_if_on_time(letter_1)
                     list_of_letters.append(letter_1)
 
@@ -249,22 +261,10 @@ def main():
                     f_2.write(line)
                     f_2.write('\n')
                     f_2.close()
-
-                except Exception as e:
-                    print('Taki blad: ' + str(e))
-                    letter_1.on_time = check_if_on_time_2(letter_1)
-                    list_of_letters.append(letter_1)
-
-                    f_2 = open("data2.txt", "a", encoding='utf-8')
-                    line = letter_1.to_file()
-                    f_2.write(line)
-                    f_2.write('\n')
-                    f_2.close()
-
-                    continue
+                    print(letter_1.to_file())
 
             except Exception as e:  # no such mail
-                print('Taki blad: ' + str(e))
+                print('Error:' + str(e))
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 print(exc_type, fname, exc_tb.tb_lineno)
