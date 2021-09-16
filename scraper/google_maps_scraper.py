@@ -99,9 +99,9 @@ def split_data(text): # dostawanie ze stringa daty
 
 
 def main():
-    listOfLetters = []
+    list_of_letters = []
     set_1 = set()
-    listOfLetters2 = []
+    list_of_letters2 = []
     # ------------------------------------------------------- czytyanie dotychczasowego zbioru
     f = open('data3.txt', 'r', encoding='utf-8')
     text = f.read()
@@ -112,13 +112,13 @@ def main():
     ij = 0
     for t in table: # dla kazdego rekordu
         tab_of_line = t.split(';') # podzial wiersza wedlug przecinkow
-        if(tab_of_line[1]!='nie doszedl'):
+        if tab_of_line[1] != 'nie doszedl':
             letter_1 = Letter(split_data(tab_of_line[0]), split_data(tab_of_line[1]), tab_of_line[2], tab_of_line[3], tab_of_line[4], tab_of_line[5], tab_of_line[7], tab_of_line[6])
             a = len(set_1)
             set_1.add(letter_1.numer_przesylki)
             b = len(set_1)
             if b>a:
-                listOfLetters.append(letter_1)
+                list_of_letters.append(letter_1)
 
         else:
             letter_1 = Letter(split_data(tab_of_line[0]), tab_of_line[1], tab_of_line[2], tab_of_line[3], tab_of_line[4], tab_of_line[5], tab_of_line[7], tab_of_line[6])
@@ -126,7 +126,7 @@ def main():
     ij = 0
     # table = table[limit:]
     f = open('data3.txt', 'w', encoding='utf-8')
-    for l in listOfLetters:
+    for l in list_of_letters:
         if ij >= limit: # zostawiamy tylko te jeszcze nieprzeczytane
             line = l.to_file()
             f.write(line)
@@ -135,7 +135,7 @@ def main():
     f.close()
     # ------------------------------------------------
     print("start")
-    for l in listOfLetters:
+    for l in list_of_letters:
         l.self_print()
     print("koniec")
 
@@ -153,11 +153,11 @@ def main():
     bt1 = agr1.find_elements_by_tag_name("button")
     bt1[1].click()
 
-    for l in listOfLetters:
+    for l in list_of_letters:
 
-        if(i>=limit):
+        if i >= limit:
             f_2 = open("wyniki4.txt","a", encoding='utf-8')
-            for l in listOfLetters2:
+            for l in list_of_letters2:
                 line = l.to_file()
                 f_2.write(line)
                 f_2.write('\n')
@@ -177,7 +177,7 @@ def main():
 
             if(tab1[1]==tab2[1]):
                 letter_2 = LetterExt(l.data_wyslania, l.data_dotarcia, l.miejsce_wysylki, l.miejsce_celu, l.typ, l.numer_przesylki, l.ilosc_dni_roboczych, l.on_time, 0, 0)
-                listOfLetters2.append(letter_2)
+                list_of_letters2.append(letter_2)
                 continue
 
             field_1 = fields[0]
@@ -207,7 +207,7 @@ def main():
                 letter_2 = LetterExt(l.data_wyslania, l.data_dotarcia, l.miejsce_wysylki, l.miejsce_celu, l.typ, l.numer_przesylki, l.ilosc_dni_roboczych, l.on_time, time1, distance)
                 letter_2.self_print()
 
-                listOfLetters2.append(letter_2)
+                list_of_letters2.append(letter_2)
 
             except:
                 # f1 = field_1.get_attribute("aria-label")
@@ -217,7 +217,7 @@ def main():
 
                 if(tab1[1]==tab2[1]):
                     letter_2 = LetterExt(l.data_wyslania, l.data_dotarcia, l.miejsce_wysylki, l.miejsce_celu, l.typ, l.numer_przesylki, l.ilosc_dni_roboczych, l.on_time, 0, 0)
-                    listOfLetters2.append(letter_2)
+                    list_of_letters2.append(letter_2)
                     continue
                 else:
                     try:
@@ -244,7 +244,7 @@ def main():
                         letter_2 = LetterExt(l.data_wyslania, l.data_dotarcia, l.miejsce_wysylki, l.miejsce_celu, l.typ, l.numer_przesylki, l.ilosc_dni_roboczych, l.on_time, time1, distance)
                         letter_2.self_print()
 
-                        listOfLetters2.append(letter_2)
+                        list_of_letters2.append(letter_2)
 
                     except:
                         continue
