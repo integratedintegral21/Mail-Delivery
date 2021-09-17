@@ -299,7 +299,7 @@ def main():
 
     print("--- %s seconds ---" % (time.time() - start_time))
 
-    f_2 = open("data2.txt", "a", encoding='utf-8')
+    f_2 = open("data2.csv", "a", encoding='utf-8')
     for l in list_of_letters:
         line = l.to_file()
         f_2.write(line)

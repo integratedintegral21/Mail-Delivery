@@ -238,7 +238,7 @@ def scrap_base(base_id, driver, list_of_letters):
                 letter_1.on_time = check_if_on_time(letter_1)
                 list_of_letters.append(letter_1)
 
-                f_2 = open("data2.txt", "a", encoding='utf-8')
+                f_2 = open("data2.csv", "a", encoding='utf-8')
                 line = letter_1.to_file()
                 f_2.write(line)
                 f_2.write('\n')

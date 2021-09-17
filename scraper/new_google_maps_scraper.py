@@ -103,13 +103,13 @@ def split_data(text):  # dostawanie ze stringa daty
     return y
 
 
-INPUT_DATA_FILENAME = 'data2.txt'
+INPUT_DATA_FILENAME = 'data2.csv'
 SAVE_FILENAME = 'wyniki5.txt'
 
 '''
     Plan dzialania:
     0) Argument pozycyjny: nr listu od którego zacząć
-    1) Wczytaj data2.txt do obiektu pd.DataFrame
+    1) Wczytaj data2.csv do obiektu pd.DataFrame
     2) Utwórz listę obiektów klasy Letter na podstawie DataFrame z pkt. 2 
     3) Rozdziel wszystkie listy na zestawy po 30 listow
     4) Iteracja po wszystkich zestawach:
@@ -136,7 +136,8 @@ def get_distance_and_time(mail_batch: np.array) -> np.array:
     PATH = "C:\Program Files (x86)\chromedriver.exe"
     driver = webdriver.Chrome(PATH)
     driver.get(
-        "https://www.google.pl/maps/dir/Warszawa/Kielce/@51.0773044,20.9078341,8.5z/data=!4m14!4m13!1m5!1m1!1s0x471ecc669a869f01:0x72f0be2a88ead3fc!2m2!1d21.0122287!2d52.2296756!1m5!1m1!1s0x47178818af891105:0x5025d8b8c0cdcdf3!2m2!1d20.6285676!2d50.8660773!3e0")
+        "https://www.google.pl/maps/dir/Warszawa/Kielce/@51.0773044,20.9078341,8.5z/data=!4m14!4m13!1m5!1m1!1s0x471ecc669a869f01:0x72f0be2a88ead3fc!2m2!1d21.0122287!2d52.2296756!1m5!1m1!1s0x47178818af891105:0x5025d8b8c0cdcdf3!2m2!1d20.6285676!2d50.8660773!3e0"
+    )
 
     # przeklikujemy zgode na cookies
     agr1 = WebDriverWait(driver, 3).until(
@@ -264,4 +265,3 @@ def main(args):
 
 if __name__ == "__main__":
     main(sys.argv)
-    main()
