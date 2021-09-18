@@ -1,6 +1,7 @@
 import sys
 import time
 
+import numpy as np
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -44,6 +45,8 @@ def get_distance_and_time(sending_location, delivery_location, driver) -> (float
         duration_str = time_div.find_element_by_tag_name('span').text
         distance_div = result.find_element_by_class_name('xB1mrd-T3iPGc-trip-tUvA6e')
         distance_str = distance_div.find_element_by_tag_name('div').text
+        print('Successfully got the distance ' + distance_str +
+              ' and trip duration ' + duration_str + ' for ' + sending_location + ", " + delivery_location)
         return distance_str, duration_str
 
     except TimeoutException:
@@ -53,7 +56,7 @@ def get_distance_and_time(sending_location, delivery_location, driver) -> (float
     except Exception as e:
         print("While searching for " + sending_location + ", " + delivery_location + " exception was thrown:" +
               e.__str__())
-        return None, None
+        return -1, -1
 
 
 def add_distance_and_time(batch_df: pd.DataFrame):
@@ -74,15 +77,15 @@ def add_distance_and_time(batch_df: pd.DataFrame):
         sending_location = locations[0]
         delivery_location = locations[1]
         distance, vehicle_time = get_distance_and_time(sending_location, delivery_location, driver)
-        # try with only city names
+        # try only with city names if exact locations failed
         if (distance, vehicle_time) == (-1, -1):
             sending_city = sending_location.split()[1]
             delivery_city = delivery_location.split()[1]
             distance, vehicle_time = get_distance_and_time(sending_city, delivery_city, driver)
         distances.append(distance)
         durations.append(vehicle_time)
-    batch_df['distance'] = pd.Series(distances)
-    batch_df['vehicle_travel_time'] = pd.Series(durations)
+    batch_df['distance'] = np.array(distances)
+    batch_df['vehicle_travel_time'] = np.array(durations)
     return batch_df
 
 
@@ -92,6 +95,7 @@ def main():
     batch = get_batch(beg_line, batch_size)
     batch = add_distance_and_time(batch)
     print(batch.to_string())
+    batch.to_csv(OUTPUT_DATA_PATH, header=False, mode='a')
 
 
 if __name__ == "__main__":
