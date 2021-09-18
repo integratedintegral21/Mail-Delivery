@@ -36,8 +36,11 @@ def get_distance_and_time(sending_location, delivery_location, driver) -> (float
     delivery_loc_field.clear()
     delivery_loc_field.send_keys(delivery_location)
     delivery_loc_field.send_keys(Keys.RETURN)
-
     try:
+        # wait until old results disappear
+        WebDriverWait(driver, 1).until(
+            EC.invisibility_of_element_located((By.CLASS_NAME, 'xB1mrd-T3iPGc-trip-ij8cu'))
+        )
         result = WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'xB1mrd-T3iPGc-trip-ij8cu'))
         )
