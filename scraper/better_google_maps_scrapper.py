@@ -1,4 +1,6 @@
 import sys
+import time
+
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -13,12 +15,15 @@ OUTPUT_DATA_PATH = 'data_with_distance.csv'
 
 def get_batch(start_line, batch_size, filename=MAIL_DATA_PATH) -> pd.DataFrame:
     mail_df = pd.read_csv(filename, sep=';').loc[range(start_line, start_line + batch_size)]
+    mail_df = mail_df[mail_df['delivery_date'] != 'nie doszedl']
     return mail_df
 
 # section-directions-trip-0
 
 
 def get_distance_and_time(sending_location, delivery_location, driver) -> (float, float):
+    if sending_location == delivery_location:
+        return 0, 0
     search = WebDriverWait(driver, 3).until(
         EC.presence_of_element_located((By.ID, "omnibox"))
     )
@@ -33,16 +38,22 @@ def get_distance_and_time(sending_location, delivery_location, driver) -> (float
 
     try:
         result = WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.CLASS_NAME, 'xB1mrd-T3iPGc-trip-duration delay-light'))
+            EC.presence_of_element_located((By.CLASS_NAME, 'xB1mrd-T3iPGc-trip-ij8cu'))
         )
-        time_div = result.find_element_by_class_name('xB1mrd-T3iPGc-trip-duration delay-light')
-        pass
+        time_div = result.find_element_by_class_name('xB1mrd-T3iPGc-trip-duration')
+        duration_str = time_div.find_element_by_tag_name('span').text
+        distance_div = result.find_element_by_class_name('xB1mrd-T3iPGc-trip-tUvA6e')
+        distance_str = distance_div.find_element_by_tag_name('div').text
+        return distance_str, duration_str
 
     except TimeoutException:
         print("Searching for " + sending_location + ", " + delivery_location + " timed out")
         return -1, -1
 
-    return 0, 0
+    except Exception as e:
+        print("While searching for " + sending_location + ", " + delivery_location + " exception was thrown:" +
+              e.__str__())
+        return None, None
 
 
 def add_distance_and_time(batch_df: pd.DataFrame):
@@ -57,17 +68,30 @@ def add_distance_and_time(batch_df: pd.DataFrame):
     )
     agr_button = agr.find_elements_by_tag_name("button")
     agr_button[1].click()
+    distances = []
+    durations = []
     for locations in batch_df[['sending_location', 'delivery_location']].values:
         sending_location = locations[0]
         delivery_location = locations[1]
         distance, vehicle_time = get_distance_and_time(sending_location, delivery_location, driver)
+        # try with only city names
+        if (distance, vehicle_time) == (-1, -1):
+            sending_city = sending_location.split()[1]
+            delivery_city = delivery_location.split()[1]
+            distance, vehicle_time = get_distance_and_time(sending_city, delivery_city, driver)
+        distances.append(distance)
+        durations.append(vehicle_time)
+    batch_df['distance'] = pd.Series(distances)
+    batch_df['vehicle_travel_time'] = pd.Series(durations)
+    return batch_df
 
 
 def main():
     beg_line = int(sys.argv[1])
     batch_size = int(sys.argv[2])
     batch = get_batch(beg_line, batch_size)
-    add_distance_and_time(batch)
+    batch = add_distance_and_time(batch)
+    print(batch.to_string())
 
 
 if __name__ == "__main__":
