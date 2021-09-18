@@ -116,6 +116,7 @@ def main(save_path=PREPARED_DATA_PATH, address_path=ADDRESSES_DATA_PATH, raw_pat
     mail_df = raw_df[['distance', 'sending_weekday', 'delivery_type', 'post_office_type', 'sending_hour_category',
                       'vehicle_travel_time', 'sending_hour', 'delivery_time_hours']]
     mail_df = mail_df[mail_df['delivery_time_hours'] < 240]
+    print(mail_df.corr(method='spearman'))
     mail_df.to_csv(save_path)
 
 

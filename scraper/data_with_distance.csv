@@ -1,7 +1,1 @@
-sending_date;delivery_date;sending_location;delivery_location;delivery_type;mail_id;on_time;working_days;distance;vehicle_travel_time
-6,2021-05-20 19:34:00,2021-05-25 09:29:00,"UP Gdynia 2 (Plac Konstytucji 2, 81-320 Gdynia)",UP Kraśnik 1,Przesyłka firmowa polecona zamiejscowa,002590077317950101142021-05-20 19:34:00,1,3,665 km,6 hr 29 min
-7,2021-05-20 19:34:00,2021-05-27 09:03:00,"UP Gdynia 2 (Plac Konstytucji 2, 81-320 Gdynia)",UP Piotrków Trybunalski 1,Przesyłka firmowa polecona zamiejscowa,002590077317950101212021-05-20 19:34:00,0,5,396 km,3 hr 47 min
-8,2021-05-20 19:34:00,2021-05-25 10:01:00,"UP Gdynia 2 (Plac Konstytucji 2, 81-320 Gdynia)",UP Sejny,Przesyłka firmowa polecona zamiejscowa,002590077317950101452021-05-20 19:34:00,1,3,447 km,5 hr 5 min
-9,2021-05-20 19:34:00,2021-05-27 10:37:00,"UP Gdynia 2 (Plac Konstytucji 2, 81-320 Gdynia)",UP Toruń 1,Przesyłka firmowa polecona zamiejscowa,002590077317950101522021-05-20 19:34:00,0,5,195 km,1 hr 57 min
-10,2021-05-20 19:34:00,2021-05-24 09:26:00,"UP Gdynia 2 (Plac Konstytucji 2, 81-320 Gdynia)",PP Białystok B103,Przesyłka firmowa polecona zamiejscowa,002590077317950101692021-05-20 19:34:00,1,2,457 km,4 hr 48 min
-11,2021-05-20 19:34:00,2021-05-24 09:26:00,"UP Gdynia 2 (Plac Konstytucji 2, 81-320 Gdynia)",PP Białystok B103,Przesyłka firmowa polecona zamiejscowa,002590077317950101762021-05-20 19:34:00,1,2,457 km,4 hr 48 min
+,sending_date;delivery_date;sending_location;delivery_location;delivery_type;mail_id;on_time;working_days;distance;vehicle_travel_time
