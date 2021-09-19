@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 MAIL_DATA_PATH = 'data2.csv'
-OUTPUT_DATA_PATH = 'data_with_distance.csv'
+OUTPUT_DATA_PATH = 'wrong_data_with_distance.csv'
 
 
 def get_batch(start_line, batch_size, filename=MAIL_DATA_PATH) -> pd.DataFrame:
