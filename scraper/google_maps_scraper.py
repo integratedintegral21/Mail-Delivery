@@ -62,6 +62,23 @@ def get_distance_and_time(sending_location, delivery_location, driver) -> (float
         return -1, -1
 
 
+def get_city_from_sending_location(location):
+    post_office_with_city = location.split('(')[0].rstrip()
+    city = post_office_with_city.split(' ')[1:]
+    # office nr given
+    if city[-1].strip().isnumeric():
+        return " ".join(city[:-1])
+    return " ".join(city)
+
+
+def get_city_from_delivery_location(location):
+    without_post_office = location.split(' ')[1:]
+    # office nr given
+    if without_post_office[-1].strip().isnumeric():
+        return " ".join(without_post_office[:-1])
+    return " ".join(without_post_office)
+
+
 def add_distance_and_time(batch_df: pd.DataFrame):
     driver_path = '/home/wojciech/chromedriver/chromedriver'
     driver = webdriver.Chrome(driver_path)
@@ -82,8 +99,8 @@ def add_distance_and_time(batch_df: pd.DataFrame):
         distance, vehicle_time = get_distance_and_time(sending_location, delivery_location, driver)
         # try only with city names if exact locations failed
         if (distance, vehicle_time) == (-1, -1):
-            sending_city = sending_location.split()[1]
-            delivery_city = delivery_location.split()[1]
+            sending_city = get_city_from_sending_location(locations[0])
+            delivery_city = get_city_from_delivery_location(locations[1])
             distance, vehicle_time = get_distance_and_time(sending_city, delivery_city, driver)
         distances.append(distance)
         durations.append(vehicle_time)
