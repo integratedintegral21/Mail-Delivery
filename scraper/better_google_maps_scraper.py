@@ -89,17 +89,12 @@ def add_distance_and_time(batch_df: pd.DataFrame):
         durations.append(vehicle_time)
     batch_df['distance'] = np.array(distances)
     batch_df['vehicle_travel_time'] = np.array(durations)
+    driver.close()
     return batch_df
 
 
-def main():
-    beg_line = int(sys.argv[1])
-    batch_size = int(sys.argv[2])
+def main(beg_line, batch_size):
     batch = get_batch(beg_line, batch_size)
     batch = add_distance_and_time(batch)
     print(batch.to_string())
     batch.to_csv(OUTPUT_DATA_PATH, header=False, mode='a')
-
-
-if __name__ == "__main__":
-    main()
