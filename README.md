@@ -21,7 +21,7 @@
   - **Pandas**
   - **Numpy**
   - **TensorFlow**
-  - **TSelenium**
+  - **Selenium**
  ## Features
   - Preparing provided data for training (about 30k records)
   - Training and saving a delivery time predictor
