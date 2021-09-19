@@ -22,6 +22,7 @@ def get_batch(start_line, batch_size, filename=MAIL_DATA_PATH) -> pd.DataFrame:
     mail_df['search_delivery_location'] = mail_df['delivery_location']
     return mail_df
 
+
 # section-directions-trip-0
 
 
@@ -66,6 +67,11 @@ def get_distance_and_time(sending_location, delivery_location, driver) -> (float
 
 
 def get_city_from_sending_location(location):
+    if ('UP' not in location) and \
+            ('PP' not in location) and \
+            ('AP' not in location) and \
+            ('DER' not in location):
+        return location
     post_office_with_city = location.split('(')[0].rstrip()
     city = post_office_with_city.split(' ')[1:]
     # office nr given
@@ -75,6 +81,11 @@ def get_city_from_sending_location(location):
 
 
 def get_city_from_delivery_location(location):
+    if ('UP' not in location) and \
+            ('PP' not in location) and \
+            ('AP' not in location) and \
+            ('DER' not in location):
+        return location
     without_post_office = location.split(' ')[1:]
     # office nr given
     if without_post_office[-1].strip().isnumeric():
@@ -135,4 +146,3 @@ def main(beg_line, batch_size):
     batch = add_distance_and_time(batch)
     print(batch.to_string())
     append_batch_to_file(batch)
-
