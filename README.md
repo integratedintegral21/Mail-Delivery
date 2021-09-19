@@ -25,7 +25,7 @@
  ## Features
   - Preparing provided data for training (about 30k records)
   - Training and saving a delivery time predictor
-  - A user-friendly library using trained model
+  - A user-friendly library using the predictor model
   - Scrapping new data specified by user
   - Evaluating distance and trip duration between 2 locations
   - Saving scrapped data to csv files
