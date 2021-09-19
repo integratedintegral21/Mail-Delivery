@@ -93,6 +93,12 @@ def get_city_from_delivery_location(location):
     return " ".join(without_post_office)
 
 
+def replace_not_found_connections(batch_arr, sending_location, delivery_location, sending_replace, delivery_replace):
+    replaced_list = [[sending_replace, delivery_replace] if x == [sending_location, delivery_location]
+                     else x for x in batch_arr]
+    return np.array(replaced_list)
+
+
 def add_distance_and_time(batch_df: pd.DataFrame):
     driver = init_scraper()
     distances = []
