@@ -94,7 +94,7 @@ def get_city_from_delivery_location(location):
 
 
 def replace_not_found_connections(batch_arr, sending_location, delivery_location, sending_replace, delivery_replace):
-    replaced_list = [[sending_replace, delivery_replace] if x == [sending_location, delivery_location]
+    replaced_list = [[sending_replace, delivery_replace] if x[0] == sending_location and x[1] == delivery_location
                      else x for x in batch_arr]
     return np.array(replaced_list)
 
@@ -115,10 +115,8 @@ def add_distance_and_time(batch_df: pd.DataFrame):
             delivery_city = get_city_from_delivery_location(locations[1])
             distance, vehicle_time = get_distance_and_time(sending_city, delivery_city, driver)
             # do not look for these locations again
-            batch_df['search_sending_location'].replace(sending_location, sending_city, inplace=True)
-            batch_df['search_delivery_location'].replace(delivery_location, delivery_city, inplace=True)
-            # update array
-            batch_arr = batch_df[['search_sending_location', 'search_delivery_location']].to_numpy()
+            batch_arr = replace_not_found_connections(batch_arr, sending_location, delivery_location, sending_city,
+                                                      delivery_city)
         distances.append(distance)
         durations.append(vehicle_time)
     batch_df['distance'] = np.array(distances)
