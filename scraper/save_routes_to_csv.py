@@ -27,9 +27,8 @@ def main():
     print('Read ' + str(len(mail_df)) + ' mails')
     mail_df = mail_df[mail_df['delivery_location'] != 'nie doszedl']
     print('Parsed ' + str(len(mail_df)) + ' routes')
-    distinct_routes = get_distinct_routes(mail_df)
-    routes_df = pd.DataFrame(data={'route': distinct_routes})
-    routes_df = split_routes_into_columns(routes_df)
+    routes_df = mail_df[['sending_location', 'delivery_location']].drop_duplicates()
+    routes_df.reset_index(inplace=True, drop=True)
     print('Found ' + str(len(routes_df)) + ' distinct routes')
     routes_df.to_csv(ROUTES_FILE_PATH, sep=';')
 
