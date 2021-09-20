@@ -32,7 +32,7 @@ def get_distance_and_time(sending_location, delivery_location, driver) -> (float
     if sending_location == delivery_location:
         return 0, 0
     search = WebDriverWait(driver, 3).until(
-        EC.presence_of_element_located((By.ID, "omnibox"))
+        EC.presence_of_element_located((By.CLASS_NAME, "tactile-searchbox-input"))
     )
     fields = driver.find_elements_by_class_name("tactile-searchbox-input")
     sending_loc_field = fields[0]
