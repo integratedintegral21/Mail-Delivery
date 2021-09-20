@@ -10,13 +10,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
-MAIL_DATA_PATH = 'data2.csv'
-OUTPUT_DATA_PATH = 'data_with_distance.csv'
+MAIL_DATA_PATH = 'routes.csv'
+OUTPUT_DATA_PATH = 'routes_with_distance.csv'
 
 
 def get_batch(start_line, batch_size, filename=MAIL_DATA_PATH) -> pd.DataFrame:
     mail_df = pd.read_csv(filename, sep=';').loc[range(start_line, start_line + batch_size)]
-    mail_df = mail_df[mail_df['delivery_date'] != 'nie doszedl']
+    mail_df = mail_df[mail_df['delivery_location'] != 'nie doszedl']
     # values to be typed in the browser
     mail_df['search_sending_location'] = mail_df['sending_location']
     mail_df['search_delivery_location'] = mail_df['delivery_location']
