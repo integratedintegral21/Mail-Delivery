@@ -15,7 +15,9 @@ OUTPUT_DATA_PATH = 'routes_with_distance.csv'
 
 
 def get_batch(start_line, batch_size, filename=MAIL_DATA_PATH) -> pd.DataFrame:
-    mail_df = pd.read_csv(filename, sep=';').loc[range(start_line, start_line + batch_size)]
+    mail_df = pd.read_csv(filename, sep=';',
+                          usecols=['sending_location', 'delivery_location']).loc[range(start_line,
+                                                                                       start_line + batch_size)]
     mail_df = mail_df[mail_df['delivery_location'] != 'nie doszedl']
     # values to be typed in the browser
     mail_df['search_sending_location'] = mail_df['sending_location']
