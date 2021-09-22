@@ -4,8 +4,6 @@
  * [General Info](#general-information)
  * [Technologies Used](#technologies-used)
  * [Features](#features)
- * [Setup](#setup)
- * [Usage](#usage)
  ## General Information
   - Subdirectories: <br/>
     -**data/** - contains files with data ready to be processed / fed to the neural network<br/>
@@ -23,7 +21,7 @@
   - **TensorFlow**
   - **Selenium**
  ## Features
-  - Preparing provided data for training (about 30k records)
+  - Preparing provided data for training (about 90k records)
   - Training and saving a delivery time predictor
   - A user-friendly library using the predictor model
   - Scrapping new data specified by user
