@@ -29,7 +29,7 @@ def scheduler(epochs, lr):
 
 
 def main():
-    mail_df = pd.read_csv(PREPARED_DATA_PATH)
+    mail_df = pd.read_csv(PREPARED_DATA_PATH, sep=';')
     mail_df = shuffle(mail_df)
 
     mail_labels = mail_df['delivery_time_hours']
@@ -56,12 +56,17 @@ def main():
     dump(forest_reg, FOREST_MODEL_PATH)
     '''
     model = Sequential([
-        Dense(50, activation='relu', kernel_initializer='he_normal', input_shape=(16,)),
-        Dropout(0.05),
+        Dense(50, activation='relu', kernel_initializer='he_normal', input_shape=(17,)),
         Dense(50, activation='relu', kernel_initializer='he_normal'),
-        Dropout(0.05),
         Dense(50, activation='relu', kernel_initializer='he_normal'),
-        Dropout(0.05),
+        Dense(50, activation='relu', kernel_initializer='he_normal'),
+        Dense(50, activation='relu', kernel_initializer='he_normal'),
+        Dense(50, activation='relu', kernel_initializer='he_normal'),
+        Dense(50, activation='relu', kernel_initializer='he_normal'),
+        Dense(50, activation='relu', kernel_initializer='he_normal'),
+        Dense(50, activation='relu', kernel_initializer='he_normal'),
+        Dense(50, activation='relu', kernel_initializer='he_normal'),
+        Dense(50, activation='relu', kernel_initializer='he_normal'),
         Dense(1)
     ])
 
