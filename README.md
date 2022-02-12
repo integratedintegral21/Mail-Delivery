@@ -9,9 +9,9 @@
     -**data/** - contains files with data ready to be processed / fed to the neural network<br/>
     -**models/** - by default empty - save trained models and processing pipelines here<br/>
     -**predictor/** - a python library to be used in your programs (follows factory creational pattern)<br/>
-    -**preprocess/** - scripts used for preproccessing data (cleaning, features selection, etc.)
-    -**scraper/** - scraping scripts. Feel free to experiment with them if you need more data
-    -**train/** - scripts resposible for rescaling data, training model and saving essential files to model/ directory
+    -**preprocess/** - scripts used for preproccessing data (cleaning, features selection, etc.)<br/>
+    -**scraper/** - scraping scripts. Feel free to experiment with them if you need more data<br/>
+    -**train/** - scripts resposible for rescaling data, training model and saving essential files to model/ directory<br/>
   - The repository provides features allowing user to estimate delivery time of a parcel or a letter to any place in Poland (default)<br/>
   - Users can provide their own data and train a new estimator with it<br/>
  ## Technologies Used
